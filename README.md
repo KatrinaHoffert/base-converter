@@ -1,4 +1,7 @@
-base-converter
+Base converter
 ==============
 
-Converts bases and floating point representations
+A simple program for converting bases and floating point representations (IEEE 754).
+
+Languages: HTML, CSS, JavaScript
+Frameworks: jQuery
