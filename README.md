@@ -6,3 +6,5 @@ A simple program for converting bases and floating point representations (IEEE 7
 Languages: HTML, CSS, JavaScript
 
 Frameworks: jQuery
+
+License: GPL v3
