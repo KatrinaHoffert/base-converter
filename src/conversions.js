@@ -882,7 +882,7 @@ $('#dec').bind("keyup change", function(){
 	// (scientific notation). Essentially, we have an optional minus sign, followed
 	// by any number of digits, then an optional period and more digits. However, if
 	// e-notation is used, there must be some number in front of the e.
-	if(! /^((-?[0-9]*\.?[0-9]*|-?[0-9]+\.?[0-9]*e[\+-]?[0-9]*)|-?i?n?f?i?n?i?t?y?)$/i.test($('#dec').val()))
+	if(! /^((-?[0-9]*\.?[0-9]*|-?[0-9]+\.?[0-9]*e[\+-]?[0-9]*)|-?i?n?f?i?n?i?t?y?|n?a?n?)$/i.test($('#dec').val()))
 	{
 		// Flash field
 		if($('#dec').val() != '')
@@ -892,7 +892,7 @@ $('#dec').bind("keyup change", function(){
 		blankFields('#bin, #oct, #duo, #hex, #b64, #floatSign, #floatExponent, #floatFraction, #doubleSign, #doubleExponent, #doubleFraction');
 	}
 	// It's valid
-	else if($('#dec').val() != '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#dec').val()))
+	else if($('#dec').val() != '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#dec').val()) && !/^(n|na)$/i.test($('#dec').val()))
 	{
 		fromDecimal(2, '#bin');
 		fromDecimal(8, '#oct');
@@ -918,7 +918,7 @@ $('#dec').bind("keyup change", function(){
 $('#bin').bind("keyup change", function(){
 	// Not a valid binary number
 	// Binary is easy! Negative sign, 1s and 0s, decimal, more 1s and 0s
-	if(! /^(-?[01]*\.?[01]*|-?i?n?f?i?n?i?t?y?)$/i.test($('#bin').val()))
+	if(! /^(-?[01]*\.?[01]*|-?i?n?f?i?n?i?t?y?|n?a?n?)$/i.test($('#bin').val()))
 	{
 		// Flash field
 		if($('#bin').val() != '')
@@ -928,7 +928,7 @@ $('#bin').bind("keyup change", function(){
 		blankFields('#dec, #oct, #duo, #hex, #b64, #floatSign, #floatExponent, #floatFraction, #doubleSign, #doubleExponent, #doubleFraction');
 	}
 	// It's valid
-	else if($('#bin').val() != '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#bin').val()))
+	else if($('#bin').val() != '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#bin').val()) && !/^(n|na)$/i.test($('#bin').val()))
 	{
 		toDecimal(2, '#bin');
 		fromDecimal(8, '#oct');
@@ -952,7 +952,7 @@ $('#bin').bind("keyup change", function(){
 $('#oct').bind("keyup change", function(){
 	// Not a valid binary number
 	// Like binary, but instead of 1s and 0s, we support a range from 0-7
-	if(! /^(-?[0-7]*\.?[0-7]*|-?i?n?f?i?n?i?t?y?)$/i.test($('#oct').val()))
+	if(! /^(-?[0-7]*\.?[0-7]*|-?i?n?f?i?n?i?t?y?|n?a?n?)$/i.test($('#oct').val()))
 	{
 		// Flash field
 		if($('#oct').val() != '')
@@ -962,7 +962,7 @@ $('#oct').bind("keyup change", function(){
 		blankFields('#dec, #bin, #duo, #hex, #b64, #floatSign, #floatExponent, #floatFraction, #doubleSign, #doubleExponent, #doubleFraction');
 	}
 	// It's valid
-	else if($('#oct').val() != '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#oct').val()))
+	else if($('#oct').val() != '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#oct').val()) && !/^(n|na)$/i.test($('#oct').val()))
 	{
 		toDecimal(8, '#oct');
 		fromDecimal(2, '#bin');
@@ -987,7 +987,7 @@ $('#duo').bind("keyup change", function(){
 	// Not a valid binary number
 	// Slightly more complicated in how we support 0-9 and the characters A and B. We also
 	// support the lowercase letters
-	if(! /^(-?[0-9ABab]*\.?[0-9ABab]*|-?i?n?f?i?n?i?t?y?)$/i.test($('#duo').val()))
+	if(! /^(-?[0-9ABab]*\.?[0-9ABab]*|-?i?n?f?i?n?i?t?y?|n?a?n?)$/i.test($('#duo').val()))
 	{
 		// Flash field
 		if($('#duo').val() != '')
@@ -997,7 +997,7 @@ $('#duo').bind("keyup change", function(){
 		blankFields('#dec, #bin, #oct, #hex, #b64, #floatSign, #floatExponent, #floatFraction, #doubleSign, #doubleExponent, #doubleFraction');
 	}
 	// It's valid
-	else if($('#duo').val() != '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#duo').val()))
+	else if($('#duo').val() != '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#duo').val()) && !/^(n|na)$/i.test($('#duo').val()))
 	{
 		toDecimal(12, '#duo');
 		fromDecimal(2, '#bin');
@@ -1021,7 +1021,7 @@ $('#duo').bind("keyup change", function(){
 $('#hex').bind("keyup change", function(){
 	// Not a valid binary number
 	// Pretty much the same as duodecimal, but 0-9 and A-F (and lowercase)
-	if(! /^(-?[0-9A-Fa-f]*\.?[0-9A-Fa-f]*|-?i?n?f?i?n?i?t?y?)$/i.test($('#hex').val()))
+	if(! /^(-?[0-9A-Fa-f]*\.?[0-9A-Fa-f]*|-?i?n?f?i?n?i?t?y?|n?a?n?)$/i.test($('#hex').val()))
 	{
 		// Flash field
 		if($('#hex').val() != '')
@@ -1031,7 +1031,7 @@ $('#hex').bind("keyup change", function(){
 		blankFields('#dec, #bin, #oct, #duo, #b64, #floatSign, #floatExponent, #floatFraction, #doubleSign, #doubleExponent, #doubleFraction');
 	}
 	// It's valid
-	else if($('#hex').val() != '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#hex').val()))
+	else if($('#hex').val() != '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#hex').val()) && !/^(n|na)$/i.test($('#hex').val()))
 	{
 		toDecimal(16, '#hex');
 		fromDecimal(2, '#bin');
