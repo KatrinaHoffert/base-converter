@@ -90,6 +90,12 @@ function tooBig(input, base)
 {
 	if(base == 10)
 	{
+		// Remove the negative sign
+		if(input.charAt(0) == '-')
+		{
+			input = input.slice(1);
+		}
+
 		// Figure out the exponent and the shift left (if any)
 		var number = input.split('e');
 		var numbersBeforePeriod = number[0].split('.')[0].length;
