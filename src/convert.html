@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <!--
 	Base converter: Convert between bases and floating point representations
-    Copyright (C) 2013 Mike Hoffert
+	Copyright (C) 2013 Mike Hoffert
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <html>
 	<head>
@@ -63,6 +63,7 @@
 				<input id="floatSign" placeholder="&plusmn;" title="Sign bit: 1 denotes negative, 0 denotes positive." />
 				<input id="floatExponent" placeholder="Exponent" title="8 bit exponent biased around 127" />
 				<input id="floatFraction" placeholder="Fraction" title="23 bit fraction (also called significand or mantisa) with an implied leading 1" />
+				<span id="floatShowMe">[Show me]</span>
 				<br />
 				<span class="wideLabel">
 					Double precision (64 bits):
@@ -70,6 +71,7 @@
 				<input id="doubleSign" placeholder="&plusmn;" title="Sign bit: 1 denotes negative, 0 denotes positive." />
 				<input id="doubleExponent" placeholder="Exponent" title="11 bit exponent biased around 1023" />
 				<input id="doubleFraction" placeholder="Fraction" title="52 bit fraction (also called significand or mantisa) with an implied leading 1" />
+				<span id="doubleShowMe">[Show me]</span>
 				<br />
 				<div id="limitWrapper">
 					<input id="optionLimitToFloat" type="button" value="Limit to float representation" title="Limits the converted number to the accuracy of a float." />
@@ -104,5 +106,6 @@
 
 		<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 		<script src="conversions.js"></script>
+		<script src="showMe.js"></script>
 	</body>
 </html>
