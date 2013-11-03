@@ -569,7 +569,7 @@ function toFloat(signField, exponentField, fractionField, exponentBits, fraction
 	}
 
 	// Special case: zero
-	if(binaryField == '0')
+	if(binaryField == '0' || binaryField == '0.')
 	{
 		var fieldSize = '';
 		while(fieldSize.length < exponentBits)
@@ -599,6 +599,7 @@ function toFloat(signField, exponentField, fractionField, exponentBits, fraction
 		zeros++;
 	}
 	split[0] = split[0].slice(zeros);
+	if(split[0] == '') split[0] = '0';
 
 	// Check if there's valid places to the left
 	if(split[0].length > 1 && parseInt(split[0]) != 0)
