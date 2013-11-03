@@ -134,6 +134,23 @@ function binaryToDecimal(binary)
   */
 function fromDecimal(base, field)
 {
+	// Special case for infinity and NaN
+	if($('#dec').val().toLowerCase() == "infinity")
+	{
+		$(field).val("Infinity");
+		return;
+	}
+	else if($('#dec').val().toLowerCase() == "-infinity")
+	{
+		$(field).val("-Infinity");
+		return;
+	}
+	else if($('#dec').val().toLowerCase() == "nan")
+	{
+		$(field).val("NaN");
+		return;
+	}
+
 	// Get the integer portion (note that Math.floor() works best on
 	// positives)
 	var decimal = Math.floor(Math.abs(parseFloat($('#dec').val())));
@@ -156,9 +173,8 @@ function fromDecimal(base, field)
 	// Math.floor() fucks up negatives. Also, extra check for that
 	// elusive "negative zero" (since we are treating the integer and
 	// fractional parts separately)
-	if(decimal < 0 || $('#dec').val().charAt(0) == '-')
+	if(parseFloat($('#dec').val()) < 0 || $('#dec').val().charAt(0) == '-')
 	{
-		decimal *= -1;
 		negative = true;
 	}
 
@@ -214,7 +230,7 @@ function fromDecimal(base, field)
 	while(decimal > 0);
 
 	// Fraction portion
-	var fractionPortion = parseFloat($('#dec').val()) % 1;
+	var fractionPortion = Math.abs(parseFloat($('#dec').val()) % 1);
 	var digits = 0;
 
 	// Calculate the fractional portion up till we're either done or
@@ -288,6 +304,23 @@ function fromDecimal(base, field)
  */
 function toDecimal(base, field)
 {
+	// Special case for infinity and NaN
+	if($(field).val().toLowerCase() == "infinity")
+	{
+		$('#dec').val("Infinity");
+		return;
+	}
+	else if($(field).val().toLowerCase() == "-infinity")
+	{
+		$('#dec').val("-Infinity");
+		return;
+	}
+	else if($(field).val().toLowerCase() == "nan")
+	{
+		$('#dec').val("NaN");
+		return;
+	}
+
 	var number = $(field).val().split(".")[0];
 	var decimal = 0;
 	var negative = false;
@@ -427,7 +460,21 @@ function toDecimal(base, field)
 		decimal *= -1;
 	}
 
-	$('#dec').val(decimal.toPrecision());
+	if(decimal == Number.POSITIVE_INFINITY)
+	{
+		$('#dec').val("Infinity");
+		// Used so that if decimal becomes infinity, so will binary
+		$(field).val("Infinity");
+	}
+	else if(decimal == Number.NEGATIVE_INFINITY)
+	{
+		$('#dec').val("-Infinity");
+		$(field).val("-Infinity");
+	}
+	else
+	{
+		$('#dec').val(decimal.toPrecision());
+	}
 }
 
 
@@ -437,6 +484,77 @@ function toDecimal(base, field)
 function toFloat(signField, exponentField, fractionField, exponentBits, fractionBits, bias)
 {
 	var binaryField = $('#bin').val();
+
+	// Special case for infinity, -infinity, and NaN
+	if(binaryField.toLowerCase() == 'infinity' || parseFloat($('#dec').val()) >= Math.pow(2, bias + 1))
+	{
+		// Sign bit
+		$(signField).val('0');
+
+		// Exponent
+		var filler = '';
+		for(var i = 0; i < exponentBits; i++)
+		{
+			filler += '1';
+		}
+		$(exponentField).val(filler);
+
+		// Fraction
+		filler = '';
+		for(var i = 0; i < fractionBits; i++)
+		{
+			filler += '0';
+		}
+		$(fractionField).val(filler);
+
+		return;
+	}
+	else if(binaryField.toLowerCase() == '-infinity'|| parseFloat($('#dec').val()) <= -Math.pow(2, bias + 1))
+	{
+		// Sign bit
+		$(signField).val('1');
+
+		// Exponent
+		var filler = '';
+		for(var i = 0; i < exponentBits; i++)
+		{
+			filler += '1';
+		}
+		$(exponentField).val(filler);
+
+		// Fraction
+		filler = '';
+		for(var i = 0; i < fractionBits; i++)
+		{
+			filler += '0';
+		}
+		$(fractionField).val(filler);
+
+		return;
+	}
+	else if(binaryField.toLowerCase() == 'nan')
+	{
+		// Sign bit
+		$(signField).val('1');
+
+		// Exponent
+		var filler = '';
+		for(var i = 0; i < exponentBits; i++)
+		{
+			filler += '1';
+		}
+		$(exponentField).val(filler);
+
+		// Fraction
+		filler = '';
+		for(var i = 0; i < fractionBits; i++)
+		{
+			filler += '1';
+		}
+		$(fractionField).val(filler);
+
+		return;
+	}
 
 	// Sign bit
 	if(binaryField.charAt(0) == '-')
@@ -640,6 +758,35 @@ function toFloat(signField, exponentField, fractionField, exponentBits, fraction
  */
 function fromFloat(signField, exponentField, fractionField, exponentBits, fractionBits, bias)
 {
+	// Special cases for infinity, -infinity, and NaN
+	var fillerExponent = '';
+	for(var i = 0; i < exponentBits; i++)
+	{
+		fillerExponent += '1';
+	}
+	var fillerFraction = '';
+	for(var i = 0; i < fractionBits; i++)
+	{
+		fillerFraction += '0';
+	}
+
+	if($(signField).val() == '0' && $(exponentField).val() == fillerExponent && $(fractionField).val() == fillerFraction)
+	{
+		$('#bin').val("Infinity");
+		return;
+	}
+	else if($(signField).val() == '1' && $(exponentField).val() == fillerExponent && $(fractionField).val() == fillerFraction)
+	{
+		$('#bin').val("-Infinity");
+		return;
+	}
+	else if($(exponentField).val() == fillerExponent)
+	{
+		$('#bin').val("NaN");
+		return;
+	}
+
+	// Regular operation
 	var binary = '';
 
 	// Sign bit
@@ -734,7 +881,7 @@ $('#dec').bind("keyup change", function(){
 	// (scientific notation). Essentially, we have an optional minus sign, followed
 	// by any number of digits, then an optional period and more digits. However, if
 	// e-notation is used, there must be some number in front of the e.
-	if(! /^(-?[0-9]*\.?[0-9]*|-?[0-9]+\.?[0-9]*e[\+-]?[0-9]*)$/.test($('#dec').val()))
+	if(! /^((-?[0-9]*\.?[0-9]*|-?[0-9]+\.?[0-9]*e[\+-]?[0-9]*)|-?i?n?f?i?n?i?t?y?)$/i.test($('#dec').val()))
 	{
 		// Flash field
 		if($('#dec').val() != '')
@@ -744,7 +891,7 @@ $('#dec').bind("keyup change", function(){
 		blankFields('#bin, #oct, #duo, #hex, #b64, #floatSign, #floatExponent, #floatFraction, #doubleSign, #doubleExponent, #doubleFraction');
 	}
 	// It's valid
-	else if($('#dec').val() != '')
+	else if($('#dec').val() != '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#dec').val()))
 	{
 		fromDecimal(2, '#bin');
 		fromDecimal(8, '#oct');
@@ -770,7 +917,7 @@ $('#dec').bind("keyup change", function(){
 $('#bin').bind("keyup change", function(){
 	// Not a valid binary number
 	// Binary is easy! Negative sign, 1s and 0s, decimal, more 1s and 0s
-	if(! /^-?[01]*\.?[01]*$/.test($('#bin').val()))
+	if(! /^(-?[01]*\.?[01]*|-?i?n?f?i?n?i?t?y?)$/i.test($('#bin').val()))
 	{
 		// Flash field
 		if($('#bin').val() != '')
@@ -780,7 +927,7 @@ $('#bin').bind("keyup change", function(){
 		blankFields('#dec, #oct, #duo, #hex, #b64, #floatSign, #floatExponent, #floatFraction, #doubleSign, #doubleExponent, #doubleFraction');
 	}
 	// It's valid
-	else if($('#bin').val() != '')
+	else if($('#bin').val() != '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#bin').val()))
 	{
 		toDecimal(2, '#bin');
 		fromDecimal(8, '#oct');
@@ -804,7 +951,7 @@ $('#bin').bind("keyup change", function(){
 $('#oct').bind("keyup change", function(){
 	// Not a valid binary number
 	// Like binary, but instead of 1s and 0s, we support a range from 0-7
-	if(! /^-?[0-7]*\.?[0-7]*$/.test($('#oct').val()))
+	if(! /^(-?[0-7]*\.?[0-7]*|-?i?n?f?i?n?i?t?y?)$/i.test($('#oct').val()))
 	{
 		// Flash field
 		if($('#oct').val() != '')
@@ -814,7 +961,7 @@ $('#oct').bind("keyup change", function(){
 		blankFields('#dec, #bin, #duo, #hex, #b64, #floatSign, #floatExponent, #floatFraction, #doubleSign, #doubleExponent, #doubleFraction');
 	}
 	// It's valid
-	else if($('#oct').val() != '')
+	else if($('#oct').val() != '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#oct').val()))
 	{
 		toDecimal(8, '#oct');
 		fromDecimal(2, '#bin');
@@ -839,7 +986,7 @@ $('#duo').bind("keyup change", function(){
 	// Not a valid binary number
 	// Slightly more complicated in how we support 0-9 and the characters A and B. We also
 	// support the lowercase letters
-	if(! /^-?[0-9ABab]*\.?[0-9ABab]*$/.test($('#duo').val()))
+	if(! /^(-?[0-9ABab]*\.?[0-9ABab]*|-?i?n?f?i?n?i?t?y?)$/i.test($('#duo').val()))
 	{
 		// Flash field
 		if($('#duo').val() != '')
@@ -849,7 +996,7 @@ $('#duo').bind("keyup change", function(){
 		blankFields('#dec, #bin, #oct, #hex, #b64, #floatSign, #floatExponent, #floatFraction, #doubleSign, #doubleExponent, #doubleFraction');
 	}
 	// It's valid
-	else if($('#duo').val() != '')
+	else if($('#duo').val() != '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#duo').val()))
 	{
 		toDecimal(12, '#duo');
 		fromDecimal(2, '#bin');
@@ -873,7 +1020,7 @@ $('#duo').bind("keyup change", function(){
 $('#hex').bind("keyup change", function(){
 	// Not a valid binary number
 	// Pretty much the same as duodecimal, but 0-9 and A-F (and lowercase)
-	if(! /^-?[0-9A-Fa-f]*\.?[0-9A-Fa-f]*$/.test($('#hex').val()))
+	if(! /^(-?[0-9A-Fa-f]*\.?[0-9A-Fa-f]*|-?i?n?f?i?n?i?t?y?)$/i.test($('#hex').val()))
 	{
 		// Flash field
 		if($('#hex').val() != '')
@@ -883,7 +1030,7 @@ $('#hex').bind("keyup change", function(){
 		blankFields('#dec, #bin, #oct, #duo, #b64, #floatSign, #floatExponent, #floatFraction, #doubleSign, #doubleExponent, #doubleFraction');
 	}
 	// It's valid
-	else if($('#hex').val() != '')
+	else if($('#hex').val() != '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#hex').val()))
 	{
 		toDecimal(16, '#hex');
 		fromDecimal(2, '#bin');
