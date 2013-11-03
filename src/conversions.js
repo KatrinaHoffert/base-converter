@@ -38,6 +38,8 @@ var blinking = {
 	'#b64': false,
 };
 
+var tooBigFlag = false;
+
 /**
  * Blanks the fields (for invalid input).
  */
@@ -78,6 +80,74 @@ function decimalToBinary(decimal)
 	while(decimal > 0);
 
 	return binary;
+}
+
+
+/**
+ * Checks if input is too large
+ */
+function tooBig(input, base)
+{
+	if(base == 10)
+	{
+		// Figure out the exponent and the shift left (if any)
+		var number = input.split('e');
+		var numbersBeforePeriod = number[0].split('.')[0].length;
+
+		// Figure out the shift right
+		var afterPeriod = number[0].split('.')[1];
+		var rightShift = 0;
+		if(afterPeriod != undefined)
+		{
+			for(var i = 0; afterPeriod.charAt(i) == '0' && i < afterPeriod.length; i++)
+			{
+				rightShift++;
+			}
+
+			// Also take into account that a single right shift (* 10^-1) doesn't introduce a zero
+			if(rightShift != 0)
+			{
+				rightShift++;
+			}
+		}
+
+		// Have we exceeded the maximum of approx 1.797e308 (accounting for shifting)?
+		if(undefined != number[1] && parseInt(number[1]) + numbersBeforePeriod - 1 >= 308 && parseFloat(number[0]) > 1.7976931348623157 / Math.pow(10, numbersBeforePeriod - 1))
+		{
+			return true;
+		}
+		else if(undefined != number[1] && number[0].charAt(0) == '0' && parseInt(number[1]) - rightShift >= 308 && parseFloat(number[0]) > 1.7976931348623157 / Math.pow(10, rightShift - 308 + parseInt(number[1])))
+		{
+			return true;
+		}
+
+		// Case when there's no e-notation and just a metric shit-ton of numbers (close enough)
+		if(numbersBeforePeriod > 308)
+		{
+			return true;
+		}
+	}
+
+	// Default case
+	return false;
+}
+
+
+/**
+ * Alerts the user that an input number is too large.
+ */
+function tooBigWarning()
+{
+	if(!tooBigFlag)
+	{
+		$('#tooBigFlag').show();
+		tooBigFlag = true;
+
+		setTimeout(function(){
+			$('#tooBigFlag').hide();
+			tooBigFlag = false;
+		}, 2500);
+	}
 }
 
 
@@ -134,168 +204,176 @@ function binaryToDecimal(binary)
   */
 function fromDecimal(base, field)
 {
-	// Special case for infinity and NaN
-	if($('#dec').val().toLowerCase() == "infinity")
+	// Special case for numbers that are too large
+	if(tooBig($('#dec').val(), 10))
 	{
-		$(field).val("Infinity");
-		return;
+		tooBigWarning();
 	}
-	else if($('#dec').val().toLowerCase() == "-infinity")
+	else
 	{
-		$(field).val("-Infinity");
-		return;
-	}
-	else if($('#dec').val().toLowerCase() == "nan")
-	{
-		$(field).val("NaN");
-		return;
-	}
-
-	// Get the integer portion (note that Math.floor() works best on
-	// positives)
-	var decimal = Math.floor(Math.abs(parseFloat($('#dec').val())));
-	var number = '';
-	var negative = false;
-
-	// Catch when number starts with decimal and no number
-	if($('#dec').val().charAt(0) == '.')
-	{
-		$('#dec').val('0' + $('#dec').val());
-	}
-
-	// Sole case is when the input is just a negative sign without
-	// the rest of the number (presumably the user is still typing)
-	if(isNaN(decimal))
-	{
-		return;
-	}
-
-	// Math.floor() fucks up negatives. Also, extra check for that
-	// elusive "negative zero" (since we are treating the integer and
-	// fractional parts separately)
-	if(parseFloat($('#dec').val()) < 0 || $('#dec').val().charAt(0) == '-')
-	{
-		negative = true;
-	}
-
-	do
-	{
-		// Prepend remainder
-		var current = decimal % base;
-
-		// Conversions for non-base 64
-		if(base != 64)
+		// Special case for infinity and NaN
+		if($('#dec').val().toLowerCase() == "infinity")
 		{
-			if(current < 10)
-			{
-				number = String(current) + number;
-			}
-			else if($('#optionLowercase').is(':checked'))
-			{
-				number = String.fromCharCode(current + 87) + number;
-			}
-			else
-			{
-				number = String.fromCharCode(current + 55) + number;
-			}
+			$(field).val("Infinity");
+			return;
 		}
-		// Conversion for base 64
-		else
+		else if($('#dec').val().toLowerCase() == "-infinity")
 		{
-			if(current < 26)
-			{
-				number = String.fromCharCode(current + 65) + number;
-			}
-			else if(current < 52)
-			{
-				number = String.fromCharCode(current + 97 - 26) + number;
-			}
-			else if(current < 62)
-			{
-				number = String(current - 52) + number;
-			}
-			else if(current == 62)
-			{
-				number = '+' + number;
-			}
-			else if(current == 63)
-			{
-				number = '/' + number;
-			}
+			$(field).val("-Infinity");
+			return;
 		}
-		// Perform integer division (note: can't use bitwise
-		// operations as they operate on 32 bit numbers only)
-		decimal = Math.floor(decimal / base);
-	}
-	while(decimal > 0);
+		else if($('#dec').val().toLowerCase() == "nan")
+		{
+			$(field).val("NaN");
+			return;
+		}
 
-	// Fraction portion
-	var fractionPortion = Math.abs(parseFloat($('#dec').val()) % 1);
-	var digits = 0;
+		// Get the integer portion (note that Math.floor() works best on
+		// positives)
+		var decimal = Math.floor(Math.abs(parseFloat($('#dec').val())));
+		var number = '';
+		var negative = false;
 
-	// Calculate the fractional portion up till we're either done or
-	// we reached the maximum digits
-	if(fractionPortion != 0)
-	{
-		number += '.';
+		// Catch when number starts with decimal and no number
+		if($('#dec').val().charAt(0) == '.')
+		{
+			$('#dec').val('0' + $('#dec').val());
+		}
+
+		// Sole case is when the input is just a negative sign without
+		// the rest of the number (presumably the user is still typing)
+		if(isNaN(decimal))
+		{
+			return;
+		}
+
+		// Math.floor() fucks up negatives. Also, extra check for that
+		// elusive "negative zero" (since we are treating the integer and
+		// fractional parts separately)
+		if(parseFloat($('#dec').val()) < 0 || $('#dec').val().charAt(0) == '-')
+		{
+			negative = true;
+		}
 
 		do
 		{
-			fractionPortion *= base;
+			// Prepend remainder
+			var current = decimal % base;
 
-			// All but base 64
+			// Conversions for non-base 64
 			if(base != 64)
 			{
-				if(Math.floor(fractionPortion) < 10)
+				if(current < 10)
 				{
-					number += String(Math.floor(fractionPortion));
+					number = String(current) + number;
 				}
 				else if($('#optionLowercase').is(':checked'))
 				{
-					number += String.fromCharCode(Math.floor(fractionPortion) + 87);
+					number = String.fromCharCode(current + 87) + number;
 				}
 				else
 				{
-					number += String.fromCharCode(Math.floor(fractionPortion) + 55);
+					number = String.fromCharCode(current + 55) + number;
 				}
 			}
-			// Base 64
+			// Conversion for base 64
 			else
 			{
-				if(Math.floor(fractionPortion) < 26)
+				if(current < 26)
 				{
-					number += String.fromCharCode(Math.floor(fractionPortion) + 65);
+					number = String.fromCharCode(current + 65) + number;
 				}
-				else if(Math.floor(fractionPortion) < 52)
+				else if(current < 52)
 				{
-					number += String.fromCharCode(Math.floor(fractionPortion) + 97 - 26);
+					number = String.fromCharCode(current + 97 - 26) + number;
 				}
-				else if(Math.floor(fractionPortion) < 62)
+				else if(current < 62)
 				{
-					number += String(Math.floor(fractionPortion) - 52);
+					number = String(current - 52) + number;
 				}
-				else if(Math.floor(fractionPortion) == 62)
+				else if(current == 62)
 				{
-					number += '+';
+					number = '+' + number;
 				}
-				else if(Math.floor(fractionPortion) == 63)
+				else if(current == 63)
 				{
-					number += '/';
+					number = '/' + number;
 				}
 			}
-
-			fractionPortion = fractionPortion - Math.floor(fractionPortion);
-
-			digits++;
+			// Perform integer division (note: can't use bitwise
+			// operations as they operate on 32 bit numbers only)
+			decimal = Math.floor(decimal / base);
 		}
-		while(fractionPortion != 0);
-	}
-	if(negative)
-	{
-		number = '-' + number;
-	}
+		while(decimal > 0);
 
-	$(field).val(number);
+		// Fraction portion
+		var fractionPortion = Math.abs(parseFloat($('#dec').val()) % 1);
+		var digits = 0;
+
+		// Calculate the fractional portion up till we're either done or
+		// we reached the maximum digits
+		if(fractionPortion != 0)
+		{
+			number += '.';
+
+			do
+			{
+				fractionPortion *= base;
+
+				// All but base 64
+				if(base != 64)
+				{
+					if(Math.floor(fractionPortion) < 10)
+					{
+						number += String(Math.floor(fractionPortion));
+					}
+					else if($('#optionLowercase').is(':checked'))
+					{
+						number += String.fromCharCode(Math.floor(fractionPortion) + 87);
+					}
+					else
+					{
+						number += String.fromCharCode(Math.floor(fractionPortion) + 55);
+					}
+				}
+				// Base 64
+				else
+				{
+					if(Math.floor(fractionPortion) < 26)
+					{
+						number += String.fromCharCode(Math.floor(fractionPortion) + 65);
+					}
+					else if(Math.floor(fractionPortion) < 52)
+					{
+						number += String.fromCharCode(Math.floor(fractionPortion) + 97 - 26);
+					}
+					else if(Math.floor(fractionPortion) < 62)
+					{
+						number += String(Math.floor(fractionPortion) - 52);
+					}
+					else if(Math.floor(fractionPortion) == 62)
+					{
+						number += '+';
+					}
+					else if(Math.floor(fractionPortion) == 63)
+					{
+						number += '/';
+					}
+				}
+
+				fractionPortion = fractionPortion - Math.floor(fractionPortion);
+
+				digits++;
+			}
+			while(fractionPortion != 0);
+		}
+		if(negative)
+		{
+			number = '-' + number;
+		}
+
+		$(field).val(number);
+	}
 }
 
 /**

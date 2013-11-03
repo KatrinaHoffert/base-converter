@@ -21,6 +21,8 @@ body
 	background-color: gray;
 	font-family: Arial, "Sans Serif";
 	color: #333;
+	margin: 0;
+	padding: 0;
 }
 
 input
@@ -110,6 +112,19 @@ input
 	background-color: #eee;
 	border: 1px solid gray;
 	padding: 2px;
+}
+
+#tooBigFlag
+{
+	width: 100%;
+	background-color: rgba(255, 50, 50, 0.75);
+	position: absolute;
+	top: 0;
+	left: 0;
+	font-size: 20pt;
+	padding: 5px 0;
+	text-align: center;
+	display: none;
 }
 
 #floatShowMe, #doubleShowMe
