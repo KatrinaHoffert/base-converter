@@ -138,3 +138,38 @@ input
 {
 	color: gray;
 }
+
+#floatShowMeCover
+{
+	background-color: rgba(0, 0, 0, 0.2);
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+#floatShowMePopup
+{
+	background-color: white;
+	width: 725px;
+	margin: 25px auto;
+	padding: 25px;
+	border-radius: 15px;
+}
+
+#floatShowMeClose
+{
+	float: right;
+	cursor: pointer;
+}
+
+#floatShowMePopup h2
+{
+	margin-top: 0;
+}
+
+.binaryText
+{
+	font-family: monospace;
+}

@@ -1131,7 +1131,8 @@ $('#b64').bind("keyup change", function(){
 		{
 			toFloat('#floatSign', '#floatExponent', '#floatFraction', 8, 23, 127);
 			toFloat('#doubleSign', '#doubleExponent', '#doubleFraction', 11, 52, 1023);
-		}				}
+		}
+	}
 	// Empty string or something went wrong
 	else
 	{
