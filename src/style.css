@@ -141,7 +141,7 @@ input
 
 #floatShowMeCover
 {
-	background-color: rgba(0, 0, 0, 0.2);
+	background-color: rgba(0, 0, 0, 0.4);
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -162,6 +162,11 @@ input
 {
 	float: right;
 	cursor: pointer;
+}
+
+#floatShowMeClose:hover
+{
+	text-shadow: 0 0 3px red;
 }
 
 #floatShowMePopup h2

@@ -1,13 +1,40 @@
+/**
+ * Utility function for converting the binary fractional component into decimal. Assumes
+ * that the input is in the form x.xxxx...
+ */
+function binaryFractionToDecimal(binary)
+{
+	var decimal = 0;
+
+	if(binary.charAt(0) == '1')
+	{
+		decimal += 1;
+	}
+
+	for(var i = 2; i < binary.length; i++)
+	{
+		decimal += binary.charAt(i) * Math.pow(2, -i + 1);
+	}
+
+	return decimal;
+}
+
+/**
+ * Creates the show me panel for demonstrating how the floating point representation.
+ */
 function floatShowMe(signField, exponentField, fractionField, exponentBits, fractionBits, bias)
 {
-	// Create the cover and popup
+	// Create the cover and popup as hidden, then fade it in
 	jQuery('<div/>', {
 		id: 'floatShowMeCover',
+		style: 'display: none;',
 	}).appendTo('body');
 
 	jQuery('<div/>', {
 		id: 'floatShowMePopup',
+		style: 'display: none;',
 	}).appendTo('#floatShowMeCover');
+	$('#floatShowMeCover, #floatShowMePopup').fadeIn(500);
 
 	// Header
 	$('#floatShowMePopup').append('<span id="floatShowMeClose">X</span><h2>Show me: IEEE 754 floating point conversion</h2>');
@@ -52,7 +79,15 @@ function floatShowMe(signField, exponentField, fractionField, exponentBits, frac
 
 		// Exponent
 		var exponent = binaryToDecimal($(exponentField).val()) - bias;
-		$('#floatShowMePopup').append('<p><b>Exponent:</b> <span class="binaryText">' + $(exponentField).val() + '</span> = ' + String(binaryToDecimal($(exponentField).val())) + '; subtract the bias (' + bias + ') to get ' + String(exponent) + '</p>');
+		// Not a subnormal
+		if(!/^0+$/.test($(exponentField).val()))
+		{
+			$('#floatShowMePopup').append('<p><b>Exponent:</b> <span class="binaryText">' + $(exponentField).val() + '</span> = ' + String(binaryToDecimal($(exponentField).val())) + '; subtract the bias (' + bias + ') to get ' + String(exponent) + '</p>');
+		}
+		else
+		{
+			$('#floatShowMePopup').append('<p><b>Exponent:</b> <span class="binaryText">' + $(exponentField).val() + '</span> = ' + String(binaryToDecimal($(exponentField).val())) + '; This is the special case of a subnormal (exponent of zero and non-zero fraction)</p>');
+		}
 
 		// Fraction
 		var binaryFraction = '';
@@ -60,7 +95,8 @@ function floatShowMe(signField, exponentField, fractionField, exponentBits, frac
 		{
 			// Subnormal
 			binaryFraction = '0.' + $(fractionField).val();
-			$('#floatShowMePopup').append('<p><b>Fraction:</b> <span class="binaryText">' + $(fractionField).val() + '</span>; this is a subnormal, so no leading <span class="binaryText">1</span> is added, leaving us with <span class="binaryText">' + binaryFraction + '</span></p>');
+			exponent = -bias + 1;
+			$('#floatShowMePopup').append('<p><b>Fraction:</b> <span class="binaryText">' + $(fractionField).val() + '</span>; this is a subnormal, so no leading <span class="binaryText">1</span> is added, leaving us with <span class="binaryText">' + binaryFraction + '</span></p><p>In addition, subnormals always have an exponent of ' + String(exponent) + '. This is because normally the smallest possible exponent is 2<sup>' + String(exponent) + '</sup>. In such a case, however, there is always a leading one. Since subnormals do not have a leading one, the exponent remains at ' + String(exponent) + ' and we get smaller numbers by inserting more zeroes after the decimal. This lets us go beyond the ' + String(exponentBits) + ' bits offered by the exponent field.</p>');
 		}
 		else
 		{
@@ -69,17 +105,28 @@ function floatShowMe(signField, exponentField, fractionField, exponentBits, frac
 			$('#floatShowMePopup').append('<p><b>Fraction:</b> <span class="binaryText">' + $(fractionField).val() + '</span>; add the implied leading <span class="binaryText">1</span> to get <span class="binaryText">' + binaryFraction + '</span></p>');
 		}
 
-		// TODO: Create converter for fraction component
 		// Put it all together
-		var fractionDecimal = 'xxx';
+		var fractionDecimal = String(binaryFractionToDecimal(binaryFraction));
 		$('#floatShowMePopup').append('<p>In decimal, the fraction component is ' + fractionDecimal + '.</p>');
 		if(negative)
 		{
-			$('#floatShowMePopup').append('<p>Since the sign bit is negtative, this number will also be negative, causing us to end up with -1 &times; ' + fractionDecimal + ' &times; 2<sup>' + exponent + '</sup> = ' + $('#dec').val() + '.</p>');
+			var actualValue = -1 * fractionDecimal * Math.pow(2, exponent);
+			var equalsSign = '&asymp; ';
+			if(actualValue == parseFloat($('#dec').val()))
+			{
+				equalsSign = '= ';
+			}
+			$('#floatShowMePopup').append('<p>Since the sign bit is negtative, this number will also be negative, causing us to end up with -1 &times; ' + fractionDecimal + ' &times; 2<sup>' + exponent + '</sup> ' + equalsSign + actualValue + '.</p>');
 		}
 		else
 		{
-			$('#floatShowMePopup').append('<p>This causes us to end up with ' + fractionDecimal + ' &times; 2<sup>' + exponent + '</sup> = ' + $('#dec').val() + '.</p>');
+			var actualValue = fractionDecimal * Math.pow(2, exponent);
+			var equalsSign = '&asymp; ';
+			if(actualValue == parseFloat($('#dec').val()))
+			{
+				equalsSign = '= ';
+			}
+			$('#floatShowMePopup').append('<p>This causes us to end up with ' + fractionDecimal + ' &times; 2<sup>' + exponent + '</sup> ' + equalsSign + actualValue + '.</p>');
 		}
 	}
 
@@ -91,8 +138,10 @@ function floatShowMe(signField, exponentField, fractionField, exponentBits, frac
 			return;
 		}
 
-		$('#floatShowMeCover').remove();
-		$('#floatShowMePopup').remove();
+		// Fade the show me out and then remove it
+		$('#floatShowMeCover, #floatShowMePopup').fadeOut(500, function(){
+			$('#floatShowMeCover, #floatShowMePopup').remove();
+		});
 	});
 }
 
