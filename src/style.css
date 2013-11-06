@@ -38,7 +38,12 @@ input
 	border-radius: 20px;
 	background-color: silver;
 	box-shadow: 0 0 35px #333;
-	text-align: center;
+}
+
+#converterWrapper
+{
+	margin: 0 auto;
+	width: 600px;
 }
 
 .label
@@ -127,19 +132,19 @@ input
 	display: none;
 }
 
-#floatShowMe, #doubleShowMe
+#floatShowMe, #doubleShowMe, #binShowMe, #octShowMe, #duoShowMe, #hexShowMe, #b64ShowMe
 {
 	cursor: pointer;
 	color: #333;
 	font-size: 80%;
 }
 
-#floatShowMe:active, #doubleShowMe:active
+#floatShowMe:hover, #doubleShowMe:hover, #binShowMe:hover, #octShowMe:hover, #duoShowMe:hover, #hexShowMe:hover, #b64ShowMe:hover
 {
 	color: gray;
 }
 
-#floatShowMeCover
+#showMeCover
 {
 	background-color: rgba(0, 0, 0, 0.4);
 	position: absolute;
@@ -149,7 +154,7 @@ input
 	height: 100%;
 }
 
-#floatShowMePopup
+#showMePopup
 {
 	background-color: white;
 	width: 725px;
@@ -158,18 +163,18 @@ input
 	border-radius: 15px;
 }
 
-#floatShowMeClose
+#showMeClose
 {
 	float: right;
 	cursor: pointer;
 }
 
-#floatShowMeClose:hover
+#showMeClose:hover
 {
 	text-shadow: 0 0 3px red;
 }
 
-#floatShowMePopup h2
+#showMePopup h2
 {
 	margin-top: 0;
 }
@@ -177,4 +182,5 @@ input
 .binaryText
 {
 	font-family: monospace;
+	word-wrap: break-word;
 }
