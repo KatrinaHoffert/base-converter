@@ -21,6 +21,191 @@ function binaryFractionToDecimal(binary)
 
 
 /**
+ * Converts the value in the decimal field into the specified base, showing the steps.
+ */
+function decimalToBaseShowMe(base)
+{
+	var integerPortion = Math.floor(Math.abs(parseFloat($('#dec').val())));
+	var fractionPortion = Math.abs(parseFloat($('#dec').val()) % 1);
+
+	$('#showMePopup').append('<p>Integer portion of the decimal is: ' + String(integerPortion) + '</p>');
+
+	var integerBased = '';
+	if(integerPortion !== 0)
+	{
+		// Create the table code
+		var tableCode = '<table class="decimalToBaseTable">';
+
+		// Creates rows in the form of [intPortion] / [base] = [result] [remainder]
+		while(integerPortion !== 0)
+		{
+			var remainder = integerPortion % base;
+
+			tableCode += '<tr><td>';
+			tableCode += String(integerPortion);
+			tableCode += '</td><td> / ';
+			tableCode += String(base);
+			tableCode += '</td><td> = ';
+
+			integerPortion = Math.floor(integerPortion / base);
+
+			tableCode += String(integerPortion);
+			tableCode += '</td><td> remainder = ';
+			tableCode += remainder;
+			tableCode += '</td></tr>';
+
+			// Add it to our string
+			if(remainder < 10 && base != 64)
+			{
+				// Regular numbers
+				integerBased = String(remainder) + integerBased;
+			}
+			else if(base != 64)
+			{
+				// Duo's A-B and hex's A-F
+				integerBased = String.fromCharCode(remainder + 55) + integerBased;
+			}
+			else
+			{
+				// B64's mess
+				if(remainder < 26)
+				{
+					integerBased = String.fromCharCode(remainder + 65) + integerBased;
+				}
+				else if(remainder < 52)
+				{
+					integerBased = String.fromCharCode(remainder + 97 - 26) + integerBased;
+				}
+				else if(remainder < 62)
+				{
+					integerBased = String(remainder - 52) + integerBased;
+				}
+				else if(remainder == 62)
+				{
+					integerBased = '+' + integerBased;
+				}
+				else if(remainder == 63)
+				{
+					integerBased = '/' + integerBased;
+				}
+			}
+		}
+
+		tableCode += '</table>';
+
+		$('#showMePopup').append(tableCode);
+
+		if(base < 10)
+		{
+			$('#showMePopup').append('<p>Now we read the remainders from bottom to top to get <span class="binaryText">' + integerBased + '</span></p>');
+		}
+		else if(base <= 16)
+		{
+			$('#showMePopup').append('<p>Now we read the remainders from bottom to top, replacing numbers greater than 9 with letters (so 10 = A, 11 = B, etc), to get <span class="binaryText">' + integerBased + '</span></p>');
+		}
+		else
+		{
+			$('#showMePopup').append('<p>Now we read the remainders from bottom to top, replacing all numbers with the characters in <a href="https://en.wikipedia.org/wiki/Base64#Base64table">this table</a>, to get <span class="binaryText">' + integerBased + '</span></p>');
+		}
+	}
+
+	$('#showMePopup').append('<p title="This can be slightly inaccurate because numbers are represented in binary internally, and cannot be represented perfectly.">Fraction portion of the decimal is: ' + String(fractionPortion) + '</p>');
+
+	var fractionBased = '';
+	if(fractionPortion !== 0)
+	{
+		// Create the table code
+		var tableCodeFrac = '<table class="decimalToBaseTable">';
+
+		// Creates rows in the form of [fracPortion] * [base] = [result] [fraction]
+		while(fractionPortion % 1 !== 0)
+		{
+			var fractionRemainder = Math.floor(fractionPortion * base);
+
+			tableCodeFrac += '<tr><td>';
+			tableCodeFrac += String(fractionPortion);
+			tableCodeFrac += '</td><td> &times; ';
+			tableCodeFrac += String(base);
+			tableCodeFrac += '</td><td> = ';
+
+			fractionPortion *= base;
+
+			tableCodeFrac += String(fractionPortion);
+			tableCodeFrac += '</td><td> whole component =  ';
+			tableCodeFrac += fractionRemainder;
+			tableCodeFrac += '</td></tr>';
+			fractionPortion -= fractionRemainder;
+
+			// Add it to our string
+			if(fractionRemainder < 10 && base != 64)
+			{
+				// Regular numbers
+				fractionBased += String(fractionRemainder);
+			}
+			else if(base != 64)
+			{
+				// Duo's A-B and hex's A-F
+				fractionBased += String.fromCharCode(fractionRemainder + 55);
+			}
+			else
+			{
+				// B64's mess
+				if(fractionRemainder < 26)
+				{
+					fractionBased += String.fromCharCode(fractionRemainder + 65);
+				}
+				else if(fractionRemainder < 52)
+				{
+					fractionBased += String.fromCharCode(fractionRemainder + 97 - 26);
+				}
+				else if(fractionRemainder < 62)
+				{
+					fractionBased += String(fractionRemainder - 52);
+				}
+				else if(fractionRemainder == 62)
+				{
+					fractionBased += '+';
+				}
+				else if(fractionRemainder == 63)
+				{
+					fractionBased += '/';
+				}
+			}
+		}
+
+		tableCodeFrac += '</table>';
+
+		$('#showMePopup').append(tableCodeFrac);
+
+		if(base < 10)
+		{
+			$('#showMePopup').append('<p>Now we read the remainders from top to bottom to get <span class="binaryText">' + fractionBased + '</span></p>');
+		}
+		else if(base <= 16)
+		{
+			$('#showMePopup').append('<p>Now we read the remainders from top to bottom, replacing numbers greater than 9 with letters (so 10 = A, 11 = B, etc), to get <span class="binaryText">' + fractionBased + '</span></p>');
+		}
+		else
+		{
+			$('#showMePopup').append('<p>Now we read the remainders from top to bottom, replacing all numbers with the characters in <a href="https://en.wikipedia.org/wiki/Base64#Base64table">this table</a>, to get <span class="binaryText">' + fractionBased + '</span></p>');
+		}
+	}
+
+	// Put it all together
+	if(integerBased === '')
+	{
+		integerBased = '0';
+	}
+	if(fractionBased === '')
+	{
+		fractionBased = '0';
+	}
+
+	$('#showMePopup').append('<p>Putting the integer and fraction portion together, we get <span class="binaryText">' + integerBased + '.' + fractionBased + '</span></p>');
+}
+
+
+/**
  * Creates the show me panel for demonstrating how the floating point representation.
  */
 function baseShowMe(field, base, name)
@@ -43,6 +228,35 @@ function baseShowMe(field, base, name)
 	// Display base and value
 	$('#showMePopup').append('<p><b>Base:</b> ' + String(base) + '</p>');
 	$('#showMePopup').append('<p><b>Value:</b> <span class="binaryText">' + $(field).val() + '</span></p>');
+
+	// Descriptions
+	$('#showMePopup').append('<h3>Description</h3>');
+	if(base == 2)
+	{
+		$('#showMePopup').append('<p>Binary is a simple numeric representation frequently used by machines because it can be easily expressed in terms of voltage: high voltage is a 1 and low voltage is a 0.</p>');
+	}
+	else if(base == 8)
+	{
+		$('#showMePopup').append('<p>Octal was useful when the word size was divisible by three (a word in a processor is the natural unit for data, measured in bits), since a single octal number represents three bits (since 2<sup>3</sup> = 8). However, most modern processors use 32 or 64 bit words, so octal has fallen out of use.</p>');
+	}
+	else if(base == 12)
+	{
+		$('#showMePopup').append('<p>While duodecimal isn\'t a common base in computer science, it has uses in mathematics, since 12 is divisible by 2, 3, 4, and 6 (compared to decimal, which is divisible only by 2 and 5). An advantage, for example, is that decimal numbers like 1/3 can be easily represented with terminating digits (1/3 in duodecimal = 0.4).</p>');
+	}
+	else if(base == 16)
+	{
+		$('#showMePopup').append('<p>Hexadecimal is a convenient base for concise representation of numbers that would be much longer in other bases. Thus, we can use it to represent binary numbers in a much more readable fashion. Hexadecimal has largely replaced octal in usefulness, since many modern processors have a word size that is a multiple of four (a word in a processor is the natural unit for data, measured in bits).</p>');
+		$('#showMePopup').append('<p>Hexadecimal is also used to represent colour codes in HTML, since colours are usually represented with 8 bits of red, green, and blue respectively, which means you can represent each colour with 2 hexadecimal digits. A 24 bit colour (8 bits of each red, blue, and green) can be represented by six hexadecimal digits.</p>');
+	}
+	else if(base == 64)
+	{
+		$('#showMePopup').append('<p>Base64 is not generally used to represent numeric data, but rather to encode text or binary data. This is convenient because the encoding will use a set of characters (so we are guarenteed there won\'t be spaces in the encoding, for example). This would make it easy to figure out where text ends.</p>');
+		$('#showMePopup').append('<p>Another use of base64 is storage of binary data as text. This can allow us to insert binary data into source code. An example would be inserting images directly into CSS (which defines the style of a website). Try <a href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAb4AAAGgCAMAAADij/IwAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAMAUExURQCU/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAETjN/IAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjExR/NCNwAAAMtJREFUeF7twQENAAAAwqD3T20ONyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIBrNdZ+AAEdlnwUAAAAAElFTkSuQmCC">this link for example</a>. Note the URL. That\'s an entire image encoded in base64. The browser will then decode that back into raw numbers (which is all binary is, really) and read that in as a PNG image.</p>');
+	}
+
+	// From decimal
+	$('#showMePopup').append('<h3>From decimal</h3>');
+	decimalToBaseShowMe(base);
 
 	// TODO: Implement intro paragraph summarizing the base and its uses
 	// Implement conversion to decimal
@@ -153,10 +367,12 @@ function floatShowMe(signField, exponentField, fractionField, exponentBits, frac
 		// Put it all together
 		var fractionDecimal = String(binaryFractionToDecimal(binaryFraction));
 		$('#showMePopup').append('<p>In decimal, the fraction component is ' + fractionDecimal + '.</p>');
+		var actualValue = '';
+		var equalsSign = '';
 		if(negative)
 		{
-			var actualValue = -1 * fractionDecimal * Math.pow(2, exponent);
-			var equalsSign = '&asymp; ';
+			actualValue = -1 * fractionDecimal * Math.pow(2, exponent);
+			equalsSign = '&asymp; ';
 			if(actualValue == parseFloat($('#dec').val()))
 			{
 				equalsSign = '= ';
@@ -165,8 +381,8 @@ function floatShowMe(signField, exponentField, fractionField, exponentBits, frac
 		}
 		else
 		{
-			var actualValue = fractionDecimal * Math.pow(2, exponent);
-			var equalsSign = '&asymp; ';
+			actualValue = fractionDecimal * Math.pow(2, exponent);
+			equalsSign = '&asymp; ';
 			if(actualValue == parseFloat($('#dec').val()))
 			{
 				equalsSign = '= ';

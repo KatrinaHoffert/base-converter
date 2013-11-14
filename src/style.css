@@ -151,7 +151,7 @@ input
 	top: 0;
 	left: 0;
 	width: 100%;
-	height: 100%;
+	min-height: 100%;
 }
 
 #showMePopup
@@ -183,4 +183,14 @@ input
 {
 	font-family: monospace;
 	word-wrap: break-word;
+}
+
+.decimalToBaseTable td:nth-child(1)
+{
+	text-align: right;
+}
+
+.decimalToBaseTable td
+{
+	padding: 0 2px;
 }
