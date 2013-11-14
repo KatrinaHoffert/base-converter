@@ -27,6 +27,7 @@
 	that leading zeroes in a binary number should be ignored, whereas the
 	program must be explicitely told to remove those.
 */
+/*jshint -W065 */
 
 // For keeping track of if a field is currently blinking (invalid input)
 var blinking = {
@@ -103,7 +104,7 @@ function tooBig(input, base)
 		// Figure out the shift right
 		var afterPeriod = number[0].split('.')[1];
 		var rightShift = 0;
-		if(afterPeriod != undefined)
+		if(afterPeriod !== undefined)
 		{
 			for(var i = 0; afterPeriod.charAt(i) == '0' && i < afterPeriod.length; i++)
 			{
@@ -111,18 +112,18 @@ function tooBig(input, base)
 			}
 
 			// Also take into account that a single right shift (* 10^-1) doesn't introduce a zero
-			if(rightShift != 0)
+			if(rightShift !== 0)
 			{
 				rightShift++;
 			}
 		}
 
 		// Have we exceeded the maximum of approx 1.797e308 (accounting for shifting)?
-		if(undefined != number[1] && parseInt(number[1]) + numbersBeforePeriod - 1 >= 308 && parseFloat(number[0]) > 1.7976931348623157 / Math.pow(10, numbersBeforePeriod - 1))
+		if(undefined !== number[1] && parseInt(number[1]) + numbersBeforePeriod - 1 >= 308 && parseFloat(number[0]) > 1.7976931348623157 / Math.pow(10, numbersBeforePeriod - 1))
 		{
 			return true;
 		}
-		else if(undefined != number[1] && number[0].charAt(0) == '0' && parseInt(number[1]) - rightShift >= 308 && parseFloat(number[0]) > 1.7976931348623157 / Math.pow(10, rightShift - 308 + parseInt(number[1])))
+		else if(undefined !== number[1] && number[0].charAt(0) == '0' && parseInt(number[1]) - rightShift >= 308 && parseFloat(number[0]) > 1.7976931348623157 / Math.pow(10, rightShift - 308 + parseInt(number[1])))
 		{
 			return true;
 		}
@@ -287,7 +288,7 @@ function fromDecimal(base, field)
 
 		// Calculate the fractional portion up till we're either done or
 		// we reached the maximum digits
-		if(fractionPortion != 0)
+		if(fractionPortion !== 0)
 		{
 			number += '.';
 
@@ -340,7 +341,7 @@ function fromDecimal(base, field)
 
 				digits++;
 			}
-			while(fractionPortion != 0);
+			while(fractionPortion !== 0);
 		}
 		if(negative)
 		{
@@ -393,7 +394,7 @@ function toDecimal(base, field)
 
 	// Handle negatives (and the ellusive negative zero for floating
 	// point support)
-	if(number < 0 || number == 0 && $(field).val().charAt(0) == '-')
+	if(number < 0 || number === 0 && $(field).val().charAt(0) == '-')
 	{
 		number = number.replace('-','');
 		negative = true;
@@ -457,54 +458,54 @@ function toDecimal(base, field)
 
 	// Fractional portion
 	var fraction = $(field).val().split(".")[1];
-	if(undefined != fraction)
+	if(undefined !== fraction)
 	{
-		for(var i = 0; i < fraction.length; i++)
+		for(var j = 0; j < fraction.length; j++)
 		{
-			var current = fraction.charAt(i);
+			var currentFrac = fraction.charAt(j);
 
 			// Non-base 64
 			if(base != 64)
 			{
-				if(!isNaN(parseInt(current)))
+				if(!isNaN(parseInt(currentFrac)))
 				{
-					current = parseInt(current);
+					currentFrac = parseInt(currentFrac);
 				}
-				else if(current.charCodeAt(0) < 97)
+				else if(currentFrac.charCodeAt(0) < 97)
 				{
-					current = current.charCodeAt(0) - 55;
+					currentFrac = currentFrac.charCodeAt(0) - 55;
 				}
 				else
 				{
-					current = current.charCodeAt(0) - 87;
+					currentFrac = currentFrac.charCodeAt(0) - 87;
 				}
 			}
 			// Base 64
 			else
 			{
-				if(!isNaN(parseInt(current)))
+				if(!isNaN(parseInt(currentFrac)))
 				{
-					current = parseInt(current) + 52;
+					currentFrac = parseInt(currentFrac) + 52;
 				}
-				else if(current == '+')
+				else if(currentFrac == '+')
 				{
-					current = 62;
+					currentFrac = 62;
 				}
-				else if(current == '/')
+				else if(currentFrac == '/')
 				{
-					current = 63;
+					currentFrac = 63;
 				}
-				else if(current.charCodeAt(0) <= 90)
+				else if(currentFrac.charCodeAt(0) <= 90)
 				{
-					current = current.charCodeAt(0) - 65;
+					currentFrac = currentFrac.charCodeAt(0) - 65;
 				}
-				else if(current.charCodeAt(0) <= 122)
+				else if(currentFrac.charCodeAt(0) <= 122)
 				{
-					current = current.charCodeAt(0) - 97 + 26;
+					currentFrac = currentFrac.charCodeAt(0) - 97 + 26;
 				}
 			}
 
-			decimal += current * Math.pow(base, -i - 1);
+			decimal += currentFrac * Math.pow(base, -j - 1);
 		}
 	}
 	
@@ -554,7 +555,7 @@ function toFloat(signField, exponentField, fractionField, exponentBits, fraction
 
 		// Fraction
 		filler = '';
-		for(var i = 0; i < fractionBits; i++)
+		for(var j = 0; j < fractionBits; j++)
 		{
 			filler += '0';
 		}
@@ -568,20 +569,20 @@ function toFloat(signField, exponentField, fractionField, exponentBits, fraction
 		$(signField).val('1');
 
 		// Exponent
-		var filler = '';
-		for(var i = 0; i < exponentBits; i++)
+		var filler2 = '';
+		for(var k = 0; k < exponentBits; k++)
 		{
-			filler += '1';
+			filler2 += '1';
 		}
-		$(exponentField).val(filler);
+		$(exponentField).val(filler2);
 
 		// Fraction
-		filler = '';
-		for(var i = 0; i < fractionBits; i++)
+		filler2 = '';
+		for(var l = 0; l < fractionBits; l++)
 		{
-			filler += '0';
+			filler2 += '0';
 		}
-		$(fractionField).val(filler);
+		$(fractionField).val(filler2);
 
 		return;
 	}
@@ -591,20 +592,20 @@ function toFloat(signField, exponentField, fractionField, exponentBits, fraction
 		$(signField).val('1');
 
 		// Exponent
-		var filler = '';
-		for(var i = 0; i < exponentBits; i++)
+		var filler3 = '';
+		for(var m = 0; m < exponentBits; m++)
 		{
-			filler += '1';
+			filler3 += '1';
 		}
-		$(exponentField).val(filler);
+		$(exponentField).val(filler3);
 
 		// Fraction
-		filler = '';
-		for(var i = 0; i < fractionBits; i++)
+		filler3 = '';
+		for(var n = 0; n < fractionBits; n++)
 		{
-			filler += '1';
+			filler3 += '1';
 		}
-		$(fractionField).val(filler);
+		$(fractionField).val(filler3);
 
 		return;
 	}
@@ -629,7 +630,7 @@ function toFloat(signField, exponentField, fractionField, exponentBits, fraction
 		{
 			fieldSize += '0';
 		}
-		$(exponentField).val(fieldSize)
+		$(exponentField).val(fieldSize);
 
 		while(fieldSize.length < fractionBits)
 		{
@@ -652,12 +653,12 @@ function toFloat(signField, exponentField, fractionField, exponentBits, fraction
 		zeros++;
 	}
 	split[0] = split[0].slice(zeros);
-	if(split[0] == '') split[0] = '0';
+	if(split[0] === '') split[0] = '0';
 
 	// Check if there's valid places to the left
-	if(split[0].length > 1 && parseInt(split[0]) != 0)
+	if(split[0].length > 1 && parseInt(split[0]) !== 0)
 	{
-		if(split[1] != undefined)
+		if(split[1] !== undefined)
 		{
 			normalized = '1.' + split[0].slice(1, split[0].length) + split[1];
 		}
@@ -668,24 +669,24 @@ function toFloat(signField, exponentField, fractionField, exponentBits, fraction
 		exponent = split[0].slice(1, split[0].length).length;
 	}
 	// Otherwise check to the right
-	else if(split[1] != undefined && split[1].length > 0 && parseInt(split[0]) == 0 && parseInt(split[1]) != 0)
+	else if(split[1] !== undefined && split[1].length > 0 && parseInt(split[0]) === 0 && parseInt(split[1]) !== 0)
 	{
-		for(var i = 0; i < split[1].length; i++)
+		for(var o = 0; o < split[1].length; o++)
 		{
 			// Find first occurance of a 1
-			if(split[1].charAt(i) == 1)
+			if(split[1].charAt(o) == 1)
 			{
 				// Last character in the string
-				if(i == split[1].length - 1)
+				if(o == split[1].length - 1)
 				{
 					normalized = '1';
 				}
 				// Otherwise chain remaining characters
 				else
 				{
-					normalized = '1.' + split[1].slice(i + 1);
+					normalized = '1.' + split[1].slice(o + 1);
 				}
-				exponent = -(i + 1);
+				exponent = -(o + 1);
 
 				break;
 			}
@@ -694,7 +695,7 @@ function toFloat(signField, exponentField, fractionField, exponentBits, fraction
 	// Otherwise we got the right position
 	else
 	{
-		if(split[1] == undefined)
+		if(split[1] === undefined)
 		{
 			normalized = split[0];
 		}
@@ -767,18 +768,18 @@ function toFloat(signField, exponentField, fractionField, exponentBits, fraction
 	// Small enough to degrade to zero (or subnormals not enabled)
 	else if(exponent <= 0)
 	{
-		var alternate = '';
-		while(alternate.length < exponentBits)
+		var alternate2 = '';
+		while(alternate2.length < exponentBits)
 		{
-			alternate += '0';
+			alternate2 += '0';
 		}
-		$(exponentField).val(alternate);
+		$(exponentField).val(alternate2);
 
-		while(alternate.length < fractionBits)
+		while(alternate2.length < fractionBits)
 		{
-			alternate += '0';
+			alternate2 += '0';
 		}
-		$(fractionField).val(alternate);
+		$(fractionField).val(alternate2);
 
 		return;
 	}
@@ -819,7 +820,7 @@ function fromFloat(signField, exponentField, fractionField, exponentBits, fracti
 		fillerExponent += '1';
 	}
 	var fillerFraction = '';
-	for(var i = 0; i < fractionBits; i++)
+	for(var j = 0; j < fractionBits; j++)
 	{
 		fillerFraction += '0';
 	}
@@ -850,17 +851,17 @@ function fromFloat(signField, exponentField, fractionField, exponentBits, fracti
 	}
 
 	// Special case for zero
-	if(parseInt($(exponentField).val()) == 0 && (!$('#optionSubnormals').is(':checked') || parseInt($(fractionField).val()) == 0))
+	if(parseInt($(exponentField).val()) === 0 && (!$('#optionSubnormals').is(':checked') || parseInt($(fractionField).val()) === 0))
 	{
 		$('#bin').val(binary + '0');
 		return;
 	}
 	// Special case for subnormals
-	else if(parseInt($(exponentField).val()) == 0 && $('#optionSubnormals').is(':checked') && parseInt($(fractionField).val()) != 0)
+	else if(parseInt($(exponentField).val()) === 0 && $('#optionSubnormals').is(':checked') && parseInt($(fractionField).val()) !== 0)
 	{
 		// Create the many zeros that preface the subnormal number
 		var padding = '';
-		for(var i = 0; i < bias - 1; i++)
+		for(var k = 0; k < bias - 1; k++)
 		{
 			padding += '0';
 		}
@@ -884,15 +885,15 @@ function fromFloat(signField, exponentField, fractionField, exponentBits, fracti
 	if(exponent > 0)
 	{
 		// Generate padding if there's not enough numbers to shift on
-		var padding = '';
-		for(var i = 0; i < exponent - fraction.length + 1; i++)
+		var padding2 = '';
+		for(var l = 0; l < exponent - fraction.length + 1; l++)
 		{
-			padding += '0';
+			padding2 += '0';
 		}
-		fraction += padding;
+		fraction += padding2;
 
 		// Add that decimal in the right place
-		if(fraction.slice(exponent + 1) != '')
+		if(fraction.slice(exponent + 1) !== '')
 		{
 			binary += fraction.slice(0, exponent + 1) + '.' + fraction.slice(exponent + 1);
 		}
@@ -905,12 +906,12 @@ function fromFloat(signField, exponentField, fractionField, exponentBits, fracti
 	else if(exponent < 0)
 	{
 		// Padding is different and located in front this time
-		var padding = '';
-		for(var i = 0; i < Math.abs(exponent); i++)
+		var padding3 = '';
+		for(var m = 0; m < Math.abs(exponent); m++)
 		{
-			padding += '0';
+			padding3 += '0';
 		}
-		fraction = padding + fraction;
+		fraction = padding3 + fraction;
 
 		binary += fraction.slice(0, 1) + '.' + fraction.slice(1);
 	}
@@ -938,14 +939,14 @@ $('#dec').bind("keyup change", function(){
 	if(! /^((-?[0-9]*\.?[0-9]*|-?[0-9]+\.?[0-9]*e[\+-]?[0-9]*)|-?i?n?f?i?n?i?t?y?|n?a?n?)$/i.test($('#dec').val()))
 	{
 		// Flash field
-		if($('#dec').val() != '')
+		if($('#dec').val() !== '')
 		{
 			blinkField('#dec');
 		}
 		blankFields('#bin, #oct, #duo, #hex, #b64, #floatSign, #floatExponent, #floatFraction, #doubleSign, #doubleExponent, #doubleFraction');
 	}
 	// It's valid
-	else if($('#dec').val() != '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#dec').val()) && !/^(n|na)$/i.test($('#dec').val()))
+	else if($('#dec').val() !== '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#dec').val()) && !/^(n|na)$/i.test($('#dec').val()))
 	{
 		fromDecimal(2, '#bin');
 		fromDecimal(8, '#oct');
@@ -954,7 +955,7 @@ $('#dec').bind("keyup change", function(){
 		fromDecimal(64, '#b64');
 		// To catch the case where we entered a single negative sign, in which case the
 		// other fields are blank
-		if($('#bin').val() != '')
+		if($('#bin').val() !== '')
 		{
 			toFloat('#floatSign', '#floatExponent', '#floatFraction', 8, 23, 127);
 			toFloat('#doubleSign', '#doubleExponent', '#doubleFraction', 11, 52, 1023);
@@ -974,21 +975,21 @@ $('#bin').bind("keyup change", function(){
 	if(! /^(-?[01]*\.?[01]*|-?i?n?f?i?n?i?t?y?|n?a?n?)$/i.test($('#bin').val()))
 	{
 		// Flash field
-		if($('#bin').val() != '')
+		if($('#bin').val() !== '')
 		{
 			blinkField('#bin');
 		}
 		blankFields('#dec, #oct, #duo, #hex, #b64, #floatSign, #floatExponent, #floatFraction, #doubleSign, #doubleExponent, #doubleFraction');
 	}
 	// It's valid
-	else if($('#bin').val() != '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#bin').val()) && !/^(n|na)$/i.test($('#bin').val()))
+	else if($('#bin').val() !== '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#bin').val()) && !/^(n|na)$/i.test($('#bin').val()))
 	{
 		toDecimal(2, '#bin');
 		fromDecimal(8, '#oct');
 		fromDecimal(12, '#duo');
 		fromDecimal(16, '#hex');
 		fromDecimal(64, '#b64');
-		if($('#dec').val() != '')
+		if($('#dec').val() !== '')
 		{
 			toFloat('#floatSign', '#floatExponent', '#floatFraction', 8, 23, 127);
 			toFloat('#doubleSign', '#doubleExponent', '#doubleFraction', 11, 52, 1023);
@@ -1008,21 +1009,21 @@ $('#oct').bind("keyup change", function(){
 	if(! /^(-?[0-7]*\.?[0-7]*|-?i?n?f?i?n?i?t?y?|n?a?n?)$/i.test($('#oct').val()))
 	{
 		// Flash field
-		if($('#oct').val() != '')
+		if($('#oct').val() !== '')
 		{
 			blinkField('#oct');
 		}
 		blankFields('#dec, #bin, #duo, #hex, #b64, #floatSign, #floatExponent, #floatFraction, #doubleSign, #doubleExponent, #doubleFraction');
 	}
 	// It's valid
-	else if($('#oct').val() != '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#oct').val()) && !/^(n|na)$/i.test($('#oct').val()))
+	else if($('#oct').val() !== '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#oct').val()) && !/^(n|na)$/i.test($('#oct').val()))
 	{
 		toDecimal(8, '#oct');
 		fromDecimal(2, '#bin');
 		fromDecimal(12, '#duo');
 		fromDecimal(16, '#hex');
 		fromDecimal(64, '#b64');
-		if($('#bin').val() != '')
+		if($('#bin').val() !== '')
 		{
 			toFloat('#floatSign', '#floatExponent', '#floatFraction', 8, 23, 127);
 			toFloat('#doubleSign', '#doubleExponent', '#doubleFraction', 11, 52, 1023);
@@ -1043,21 +1044,21 @@ $('#duo').bind("keyup change", function(){
 	if(! /^(-?[0-9ABab]*\.?[0-9ABab]*|-?i?n?f?i?n?i?t?y?|n?a?n?)$/i.test($('#duo').val()))
 	{
 		// Flash field
-		if($('#duo').val() != '')
+		if($('#duo').val() !== '')
 		{
 			blinkField('#duo');
 		}
 		blankFields('#dec, #bin, #oct, #hex, #b64, #floatSign, #floatExponent, #floatFraction, #doubleSign, #doubleExponent, #doubleFraction');
 	}
 	// It's valid
-	else if($('#duo').val() != '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#duo').val()) && !/^(n|na)$/i.test($('#duo').val()))
+	else if($('#duo').val() !== '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#duo').val()) && !/^(n|na)$/i.test($('#duo').val()))
 	{
 		toDecimal(12, '#duo');
 		fromDecimal(2, '#bin');
 		fromDecimal(8, '#oct');
 		fromDecimal(16, '#hex');
 		fromDecimal(64, '#b64');
-		if($('#bin').val() != '')
+		if($('#bin').val() !== '')
 		{
 			toFloat('#floatSign', '#floatExponent', '#floatFraction', 8, 23, 127);
 			toFloat('#doubleSign', '#doubleExponent', '#doubleFraction', 11, 52, 1023);
@@ -1077,21 +1078,21 @@ $('#hex').bind("keyup change", function(){
 	if(! /^(-?[0-9A-Fa-f]*\.?[0-9A-Fa-f]*|-?i?n?f?i?n?i?t?y?|n?a?n?)$/i.test($('#hex').val()))
 	{
 		// Flash field
-		if($('#hex').val() != '')
+		if($('#hex').val() !== '')
 		{
 			blinkField('#hex');
 		}
 		blankFields('#dec, #bin, #oct, #duo, #b64, #floatSign, #floatExponent, #floatFraction, #doubleSign, #doubleExponent, #doubleFraction');
 	}
 	// It's valid
-	else if($('#hex').val() != '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#hex').val()) && !/^(n|na)$/i.test($('#hex').val()))
+	else if($('#hex').val() !== '' && !/^-?(i|in|inf|infi|infin|infini|infinit)$/i.test($('#hex').val()) && !/^(n|na)$/i.test($('#hex').val()))
 	{
 		toDecimal(16, '#hex');
 		fromDecimal(2, '#bin');
 		fromDecimal(8, '#oct');
 		fromDecimal(12, '#duo');
 		fromDecimal(64, '#b64');
-		if($('#bin').val() != '')
+		if($('#bin').val() !== '')
 		{
 			toFloat('#floatSign', '#floatExponent', '#floatFraction', 8, 23, 127);
 			toFloat('#doubleSign', '#doubleExponent', '#doubleFraction', 11, 52, 1023);
@@ -1113,21 +1114,21 @@ $('#b64').bind("keyup change", function(){
 	if(! /^-?[0-9A-Za-z\+\/]*\.?[0-9A-Za-z\+\/]*$/.test($('#b64').val()))
 	{
 		// Flash field
-		if($('#b64').val() != '')
+		if($('#b64').val() !== '')
 		{
 			blinkField('#b64');
 		}
 		blankFields('#dec, #bin, #oct, #duo, #hex, #floatSign, #floatExponent, #floatFraction, #doubleSign, #doubleExponent, #doubleFraction');
 	}
 	// It's valid
-	else if($('#b64').val() != '')
+	else if($('#b64').val() !== '')
 	{
 		toDecimal(64, '#b64');
 		fromDecimal(2, '#bin');
 		fromDecimal(8, '#oct');
 		fromDecimal(12, '#duo');
 		fromDecimal(16, '#hex');
-		if($('#bin').val() != '')
+		if($('#bin').val() !== '')
 		{
 			toFloat('#floatSign', '#floatExponent', '#floatFraction', 8, 23, 127);
 			toFloat('#doubleSign', '#doubleExponent', '#doubleFraction', 11, 52, 1023);
@@ -1156,7 +1157,7 @@ $('#floatSign, #floatExponent, #floatFraction').bind("keyup change", function(){
 		blankFields('#dec, #bin, #oct, #duo, #hex, #b64, #doubleSign, #doubleExponent, #doubleFraction');
 	}
 	// It's valid (must check lengths are correct)
-	else if($('#floatSign').val() != '' && $('#floatExponent').val() != '' && $('#floatFraction').val() != '' && $('#floatSign').val().length == 1 && $('#floatExponent').val().length == 8 && $('#floatFraction').val().length == 23)
+	else if($('#floatSign').val() !== '' && $('#floatExponent').val() !== '' && $('#floatFraction').val() !== '' && $('#floatSign').val().length == 1 && $('#floatExponent').val().length == 8 && $('#floatFraction').val().length == 23)
 	{
 		fromFloat('#floatSign', '#floatExponent', '#floatFraction', 8, 23, 127);
 		toDecimal(2, '#bin');
@@ -1184,7 +1185,7 @@ $('#doubleSign, #doubleExponent, #doubleFraction').bind("keyup change", function
 		blankFields('#dec, #bin, #oct, #duo, #hex, #b64, #floatSign, #floatExponent, #floatFraction');
 	}
 	// It's valid (must check lengths are correct)
-	else if($('#doubleSign').val() != '' && $('#doubleExponent').val() != '' && $('#doubleFraction').val() != '' && $('#doubleSign').val().length == 1 && $('#doubleExponent').val().length == 11 && $('#doubleFraction').val().length == 52)
+	else if($('#doubleSign').val() !== '' && $('#doubleExponent').val() !== '' && $('#doubleFraction').val() !== '' && $('#doubleSign').val().length == 1 && $('#doubleExponent').val().length == 11 && $('#doubleFraction').val().length == 52)
 	{
 		fromFloat('#doubleSign', '#doubleExponent', '#doubleFraction', 11, 52, 1023);
 		toDecimal(2, '#bin');
@@ -1212,7 +1213,7 @@ $('#optionLowercase').bind("change", function(){
 
 $('#optionSubnormals').bind("change", function(){
 	// Only update if inputs aren't empty
-	if($('#dec').val() != '')
+	if($('#dec').val() !== '')
 	{
 		toFloat('#floatSign', '#floatExponent', '#floatFraction', 8, 23, 127);
 		toFloat('#doubleSign', '#doubleExponent', '#doubleFraction', 11, 52, 1023);
