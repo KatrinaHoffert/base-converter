@@ -179,29 +179,245 @@ function decimalToBaseShowMe(base)
 
 		if(base < 10)
 		{
-			$('#showMePopup').append('<p>Now we read the remainders from top to bottom to get <span class="binaryText">' + fractionBased + '</span></p>');
+			$('#showMePopup').append('<p>Now we read the whole components from top to bottom to get <span class="binaryText">' + fractionBased + '</span></p>');
 		}
 		else if(base <= 16)
 		{
-			$('#showMePopup').append('<p>Now we read the remainders from top to bottom, replacing numbers greater than 9 with letters (so 10 = A, 11 = B, etc), to get <span class="binaryText">' + fractionBased + '</span></p>');
+			$('#showMePopup').append('<p>Now we read the whole components from top to bottom, replacing numbers greater than 9 with letters (so 10 = A, 11 = B, etc), to get <span class="binaryText">' + fractionBased + '</span></p>');
 		}
 		else
 		{
-			$('#showMePopup').append('<p>Now we read the remainders from top to bottom, replacing all numbers with the characters in <a href="https://en.wikipedia.org/wiki/Base64#Base64table">this table</a>, to get <span class="binaryText">' + fractionBased + '</span></p>');
+			$('#showMePopup').append('<p>Now we read the whole components from top to bottom, replacing all numbers with the characters in <a href="https://en.wikipedia.org/wiki/Base64#Base64table">this table</a>, to get <span class="binaryText">' + fractionBased + '</span></p>');
 		}
 	}
 
 	// Put it all together
-	if(integerBased === '')
+	if(integerBased === '' && base != 64)
 	{
 		integerBased = '0';
 	}
-	if(fractionBased === '')
+	else if(integerBased === '')
+	{
+		integerBased = 'A';
+	}
+	if(fractionBased === '' && base != 64)
 	{
 		fractionBased = '0';
 	}
+	else if(fractionBased === '')
+	{
+		fractionBased = 'A';
+	}
 
-	$('#showMePopup').append('<p>Putting the integer and fraction portion together, we get <span class="binaryText">' + integerBased + '.' + fractionBased + '</span></p>');
+	if((fractionBased == 'A' || integerBased == 'A') && base == 64)
+	{
+		$('#showMePopup').append('<p>In Base64, decimal zero is <a href="https://en.wikipedia.org/wiki/Base64#Base64table">represented as <span class="binaryText">A</span></a>.</p>');
+	}
+
+	$('#showMePopup').append('<p>Putting the integer and fraction portion together, we get <span class="binaryText">' + integerBased + '.' + fractionBased + '</span>.</p>');
+
+	if($('#dec').val().charAt(0) == '-')
+	{
+		$('#showMePopup').append('<p>Since the decimal is negative, we ultimately end up with <span class="binaryText">-' + integerBased + '.' + fractionBased + '</span>.</p>');
+	}
+}
+
+
+/**
+ * Converts the value in the supplied field into decimal, showing the steps.
+ */
+function baseToDecimalShowMe(base, field)
+{
+	var integerPortion = $(field).val().split('.')[0];
+	var fractionPortion = $(field).val().split('.')[1];
+
+	// Remove the negative sign
+	if(integerPortion.charAt(0) == '-')
+	{
+		integerPortion = integerPortion.slice(1);
+	}
+
+	// Fill in empty fraction portions
+	if(fractionPortion === undefined && base != 64)
+	{
+		fractionPortion = '0';
+	}
+	else if(fractionPortion === undefined)
+	{
+		fractionPortion = 'A';
+	}
+
+	// Convert the integer portion
+	$('#showMePopup').append('<p>Integer portion of the number is: ' + String(integerPortion) + '</p>');
+
+	var integerDecimal = 0;
+	var integerString1 = '';
+	var integerString2 = '';
+	for(var i = integerPortion.length - 1, pos = 0; i >= 0; i--)
+	{
+		// Have to find the value of the number at the given position
+		var current = integerPortion.charAt(i);
+
+		// Non-base 64
+		if(base != 64)
+		{
+			if(!isNaN(parseInt(current)))
+			{
+				current = parseInt(current);
+			}
+			else if(current.charCodeAt(0) < 97)
+			{
+				current = current.charCodeAt(0) - 55;
+			}
+			else
+			{
+				current = current.charCodeAt(0) - 87;
+			}
+		}
+		// Base 64
+		else
+		{
+			if(!isNaN(parseInt(current)))
+			{
+				current = parseInt(current) + 52;
+			}
+			else if(current == '+')
+			{
+				current = 62;
+			}
+			else if(current == '/')
+			{
+				current = 63;
+			}
+			else if(current.charCodeAt(0) <= 90)
+			{
+				current = current.charCodeAt(0) - 65;
+			}
+			else if(current.charCodeAt(0) <= 122)
+			{
+				current = current.charCodeAt(0) - 97 + 26;
+			}
+		}
+
+		// Don't insert a "+" for the first term
+		if(integerString1 !== '')
+		{
+			integerString1 = String(current) + ' &times; ' + String(base) + '<sup>' + pos + '</sup> + ' + integerString1;
+		}
+		else
+		{
+			integerString1 = String(current) + ' &times; ' + String(base) + '<sup>' + pos + '</sup> ' + integerString1;
+		}
+
+		// Now create a string with the exponents done
+		if(integerString2 !== '')
+		{
+			integerString2 = String(current * Math.pow(base, pos)) + ' + ' + integerString2;
+		}
+		else
+		{
+			integerString2 = String(current * Math.pow(base, pos)) + integerString2;
+		}
+
+		integerDecimal += current * Math.pow(base, pos);
+		pos++;
+	}
+
+	// Don't display information for a zero
+	if(integerDecimal !== 0)
+	{
+		$('#showMePopup').append('<p>Integer portion = ' + integerString1 + '<br />Integer portion = ' + integerString2 + '<br />Integer portion = ' + integerDecimal + '</p>');
+	}
+
+	// Convert the fraction portion
+	$('#showMePopup').append('<p>Fraction portion of the number is: ' + String(fractionPortion) + '</p>');
+
+	var fractionDecimal = 0;
+	var fractionString1 = '';
+	var fractionString2 = '';
+	for(var j = 0; j < fractionPortion.length; j++)
+	{
+		// Have to find the value of the number at the given position
+		var current = fractionPortion.charAt(j);
+
+		// Non-base 64
+		if(base != 64)
+		{
+			if(!isNaN(parseInt(current)))
+			{
+				current = parseInt(current);
+			}
+			else if(current.charCodeAt(0) < 97)
+			{
+				current = current.charCodeAt(0) - 55;
+			}
+			else
+			{
+				current = current.charCodeAt(0) - 87;
+			}
+		}
+		// Base 64
+		else
+		{
+			if(!isNaN(parseInt(current)))
+			{
+				current = parseInt(current) + 52;
+			}
+			else if(current == '+')
+			{
+				current = 62;
+			}
+			else if(current == '/')
+			{
+				current = 63;
+			}
+			else if(current.charCodeAt(0) <= 90)
+			{
+				current = current.charCodeAt(0) - 65;
+			}
+			else if(current.charCodeAt(0) <= 122)
+			{
+				current = current.charCodeAt(0) - 97 + 26;
+			}
+		}
+
+		// Don't insert a "+" for the first term
+		if(fractionString1 !== '')
+		{
+			fractionString1 += ' + ' + String(current) + ' &times; ' + String(base) + '<sup>' + -(j + 1) + '</sup>';
+		}
+		else
+		{
+			fractionString1 += String(current) + ' &times; ' + String(base) + '<sup>' + -(j + 1) + '</sup>';
+		}
+
+		// Now create a string with the exponents done
+		if(fractionString2 !== '')
+		{
+			fractionString2 += ' + ' + String(current * Math.pow(base, -(j + 1)));
+		}
+		else
+		{
+			fractionString2 += String(current * Math.pow(base, -(j + 1)));
+		}
+
+		fractionDecimal += current * Math.pow(base, -(j + 1));
+		pos++;
+	}
+
+	// Don't display information for a zero
+	if(fractionDecimal !== 0)
+	{
+		$('#showMePopup').append('<p>Fraction portion = ' + fractionString1 + '<br />Fraction portion = ' + fractionString2 + '<br />Fraction portion = ' + fractionDecimal + '</p>');
+	}
+
+	// Put it all together
+	$('#showMePopup').append('<p>Putting the integer and fraction portion together, we get ' + (integerDecimal + fractionDecimal) + '.</p>');
+
+	if($('#dec').val().charAt(0) == '-')
+	{
+		$('#showMePopup').append('<p>Since the decimal is negative, we ultimately end up with <span class="binaryText">-' + -(integerDecimal + fractionDecimal) + '</span>.</p>');
+	}
 }
 
 
@@ -258,9 +474,9 @@ function baseShowMe(field, base, name)
 	$('#showMePopup').append('<h3>From decimal</h3>');
 	decimalToBaseShowMe(base);
 
-	// TODO: Implement intro paragraph summarizing the base and its uses
-	// Implement conversion to decimal
-	// Implement conversion from decimal
+	// To decimal
+	$('#showMePopup').append('<h3>To decimal</h3>');
+	baseToDecimalShowMe(base, field);
 
 	// Close when the background or close button is clicked
 	$('#showMeCover, #showMeClose').on('click', function(e){
