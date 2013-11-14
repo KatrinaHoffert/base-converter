@@ -82,7 +82,14 @@ function decimalToBaseShowMe(base)
 			else if(base != 64)
 			{
 				// Duo's A-B and hex's A-F
-				integerBased = String.fromCharCode(remainder + 55) + integerBased;
+				if($('#optionLowercase').is(':checked'))
+				{
+					integerBased = String.fromCharCode(remainder + 87) + integerBased;
+				}
+				else
+				{
+					integerBased = String.fromCharCode(remainder + 55) + integerBased;
+				}
 			}
 			else
 			{
@@ -267,7 +274,7 @@ function baseToDecimalShowMe(base, field)
 	}
 
 	// Convert the integer portion
-	$('#showMePopup').append('<p>Integer portion of the number is: ' + String(integerPortion) + '</p>');
+	$('#showMePopup').append('<p>Integer portion of the number is: <span class="binaryText">' + String(integerPortion) + '</span></p>');
 
 	var integerDecimal = 0;
 	var integerString1 = '';
@@ -349,7 +356,7 @@ function baseToDecimalShowMe(base, field)
 	}
 
 	// Convert the fraction portion
-	$('#showMePopup').append('<p>Fraction portion of the number is: ' + String(fractionPortion) + '</p>');
+	$('#showMePopup').append('<p>Fraction portion of the number is: <span class="binaryText">' + String(fractionPortion) + '</span></p>');
 
 	var fractionDecimal = 0;
 	var fractionString1 = '';
@@ -357,70 +364,70 @@ function baseToDecimalShowMe(base, field)
 	for(var j = 0; j < fractionPortion.length; j++)
 	{
 		// Have to find the value of the number at the given position
-		var current = fractionPortion.charAt(j);
+		var currentFrac = fractionPortion.charAt(j);
 
 		// Non-base 64
 		if(base != 64)
 		{
-			if(!isNaN(parseInt(current)))
+			if(!isNaN(parseInt(currentFrac)))
 			{
-				current = parseInt(current);
+				currentFrac = parseInt(currentFrac);
 			}
-			else if(current.charCodeAt(0) < 97)
+			else if(currentFrac.charCodeAt(0) < 97)
 			{
-				current = current.charCodeAt(0) - 55;
+				currentFrac = currentFrac.charCodeAt(0) - 55;
 			}
 			else
 			{
-				current = current.charCodeAt(0) - 87;
+				currentFrac = currentFrac.charCodeAt(0) - 87;
 			}
 		}
 		// Base 64
 		else
 		{
-			if(!isNaN(parseInt(current)))
+			if(!isNaN(parseInt(currentFrac)))
 			{
-				current = parseInt(current) + 52;
+				currentFrac = parseInt(currentFrac) + 52;
 			}
-			else if(current == '+')
+			else if(currentFrac == '+')
 			{
-				current = 62;
+				currentFrac = 62;
 			}
-			else if(current == '/')
+			else if(currentFrac == '/')
 			{
-				current = 63;
+				currentFrac = 63;
 			}
-			else if(current.charCodeAt(0) <= 90)
+			else if(currentFrac.charCodeAt(0) <= 90)
 			{
-				current = current.charCodeAt(0) - 65;
+				currentFrac = currentFrac.charCodeAt(0) - 65;
 			}
-			else if(current.charCodeAt(0) <= 122)
+			else if(currentFrac.charCodeAt(0) <= 122)
 			{
-				current = current.charCodeAt(0) - 97 + 26;
+				currentFrac = currentFrac.charCodeAt(0) - 97 + 26;
 			}
 		}
 
 		// Don't insert a "+" for the first term
 		if(fractionString1 !== '')
 		{
-			fractionString1 += ' + ' + String(current) + ' &times; ' + String(base) + '<sup>' + -(j + 1) + '</sup>';
+			fractionString1 += ' + ' + String(currentFrac) + ' &times; ' + String(base) + '<sup>' + -(j + 1) + '</sup>';
 		}
 		else
 		{
-			fractionString1 += String(current) + ' &times; ' + String(base) + '<sup>' + -(j + 1) + '</sup>';
+			fractionString1 += String(currentFrac) + ' &times; ' + String(base) + '<sup>' + -(j + 1) + '</sup>';
 		}
 
 		// Now create a string with the exponents done
 		if(fractionString2 !== '')
 		{
-			fractionString2 += ' + ' + String(current * Math.pow(base, -(j + 1)));
+			fractionString2 += ' + ' + String(currentFrac * Math.pow(base, -(j + 1)));
 		}
 		else
 		{
-			fractionString2 += String(current * Math.pow(base, -(j + 1)));
+			fractionString2 += String(currentFrac * Math.pow(base, -(j + 1)));
 		}
 
-		fractionDecimal += current * Math.pow(base, -(j + 1));
+		fractionDecimal += currentFrac * Math.pow(base, -(j + 1));
 		pos++;
 	}
 
@@ -435,7 +442,7 @@ function baseToDecimalShowMe(base, field)
 
 	if($('#dec').val().charAt(0) == '-')
 	{
-		$('#showMePopup').append('<p>Since the decimal is negative, we ultimately end up with <span class="binaryText">-' + -(integerDecimal + fractionDecimal) + '</span>.</p>');
+		$('#showMePopup').append('<p>Since the decimal is negative, we ultimately end up with -' + (integerDecimal + fractionDecimal) + '.</p>');
 	}
 }
 
