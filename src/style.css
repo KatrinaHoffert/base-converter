@@ -194,3 +194,13 @@ input
 {
 	padding: 0 2px;
 }
+
+a
+{
+	color: #339;
+}
+
+a:hover
+{
+	color: #559;
+}
