@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Tutorial: Base conversion</title>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" type="text/css" href="../style.css" />
+	</head>
+	<body>
+		<div id="wrapper">
+			<a href="../index.html">&lt; Back to the base converter</a>
+			<h1>Base conversion</h1>
+			<p>
+				Numeric bases are a way of representing numbers. We often represent numbers in decimal, which is base ten ("deci" means ten). However, we can represent these numbers in other numeric bases, too. For example, computers usually represent numbers in binary, which is base two. It's still the same number, but our way of representing it is different. This difference in representation is important because certain bases are useful for different tasks, as this tutorial will explain.
+			</p>
+
+			<h2>An introduction to numeric bases</h2>
+			<p>As mentioned, decimal is the most commonly used base in modern society. The ancient Babylonians, for example, likes <a href="https://en.wikipedia.org/wiki/Sexagesimal">base 60</a>, which is why the number 60 is used in time keeping (60 seconds in a minute, 60 minutes in an hour, etc). Ten seems like a natural base for humans because we have ten fingers.</p>
+			<p>A base is the number at which we move to the next digit place. In base ten, we have one digit for numbers one through nine. Once we hit ten, we now have two digits. Each digit in a number has a value such that the base is raised to a subsequentially larger power:</p>
+			<div class="centeredFormula">
+				<img src="http://latex.codecogs.com/png.latex?245&space;=&space;2&space;\times&space;10^2&space;&plus;&space;4&space;\times&space;10^1&space;&plus;&space;5&space;\times&space;10^0" /><br />
+				<img src="http://latex.codecogs.com/png.latex?245&space;=&space;2&space;\times&space;100&space;&plus;&space;4&space;\times&space;10&space;&plus;&space;5&space;\times&space;1" /><br />
+				<img src="http://latex.codecogs.com/png.latex?245&space;=&space;200&space;&plus;&space;40&space;&plus;&space;5" />
+			</div>
+			<p>This also applies to numbers that have a fractional component, but the powers become negative:</p>
+			<div class="centeredFormula">
+				<img src="http://latex.codecogs.com/png.latex?0.125&space;=&space;1&space;\times&space;10^{-1}&space;&plus;&space;2&space;\times&space;10^{-2}&space;&plus;&space;5&space;\times&space;10^{-3}" /><br />
+				<img src="http://latex.codecogs.com/png.latex?0.125&space;=&space;1&space;\times&space;0.1&space;&plus;&space;2&space;\times&space;0.01&space;&plus;&space;5&space;\times&space;0.001" /><br />
+				<img src="http://latex.codecogs.com/png.latex?0.125&space;=&space;0.1&space;&plus;&space;0.02&space;&plus;&space;0.005" />
+			</div>
+			<p>As you can see, all decimal numbers are just sums of a series of numbers between zero and the base (so for decimal, 0 to 9) multiplied by some power of the base.</p>
+			<p>This works for all bases. Binary, for example, is base two. There's only two possible digits: 0 and 1. So naturally, all binary numbers are composed solely of zeros and ones. Since 1 is the largest value a binary digit can have, incrementing that would require us to move to the next digit place. So just like how adding 1<sub>10</sub> to 9<sub>10</sub> gives us 10<sub>10</sub>, adding 1<sub>2</sub> to 1<sub>2</sub> gives us 10<sub>2</sub>.</p>
+			<p>In this tutorial, we will disambiguate between the different bases with a subscript. After all, "10" in decimal means something entirely different than it does in binary. Thus, 10<sub>10</sub> refers to 10 in decimal, while 10<sub>2</sub> refers to 10 in binary.</p>
+			<p>Binary is a common base because most modern computers use binary to store data. All data on computers is stored as numbers, and it is up to the software and hardware to interpret these numbers as something meaningful. This actually is a lot like numeric bases. The number "10" could refer to very different numbers depending on what base we are using. Binary is the dominant choice for computers because it's so easy to represent in a machine. For our decimal system, we have ten different digits. Machines instead use two different voltage levels. So a high voltage can be considered a 1 and a low voltage can be considered a 0. Thus, we could store numbers as electricity (other methods include magnetism, as hard drives do, or small grooves, as CDs do).</p>
+
+			<h2>Converting other bases to decimal</h2>
+			<p>So we know what numeric bases are now, and how binary numbers are represented. Let's now go over how we can convert a number from another base into decimal. The following process works for whole numbers in all bases:</p>
+			<ol>
+				<li>Start with some integer i = 0</li>
+				<li>Starting at the right most digit, that digit has a value of <img src="http://latex.codecogs.com/png.latex?\inline&space;digit&space;\times&space;base^i" /></li>
+				<li>Repeat (2) from right to left for all digits, incrementing i each time.</li>
+			</ol>
+			<p>For example, to convert the number 1011001<sub>2</sub> to decimal:</p>
+			<div class="centeredFormula">
+				<img src="http://latex.codecogs.com/png.latex?1011001_2&space;=&space;1&space;\times&space;2^0&space;&plus;&space;0&space;\times&space;2^1&space;&plus;&space;0&space;\times&space;2^2&space;&plus;&space;1&space;\times&space;2^3&space;&plus;&space;1&space;\times&space;2^4&space;&plus;&space;0&space;\times&space;2^5&space;&plus;&space;1&space;\times&space;2^6" /><br />
+				<img src="http://latex.codecogs.com/png.latex?1011001_2&space;=&space;1&space;&plus;&space;0&space;&plus;&space;0&space;&plus;&space;8&space;&plus;&space;16&space;&plus;&space;0&space;&plus;&space;64" /><br />
+				<img src="http://latex.codecogs.com/png.latex?1011001_2&space;=&space;81_{10}" />
+			</div>
+			<p>This resembles how we broke up the decimal number above. Positive numbers work the same way, but instead of incrementing the power, we decrement it. So to convert 0.0101<sub>2</sub> to decimal, we do:</p>
+			<div class="centeredFormula">
+				<img src="http://latex.codecogs.com/png.latex?0.0101_2&space;=&space;0&space;\times&space;2^{-1}&space;&plus;&space;1&space;\times&space;2^{-2}&space;&plus;&space;0&space;\times&space;2^{-3}&space;&plus;&space;1&space;\times&space;2^{-4}" /><br />
+				<img src="http://latex.codecogs.com/png.latex?0.0101_2&space;=&space;0&space;&plus;&space;0.25&space;&plus;&space;0&space;&plus;&space;0.0625" /><br />
+				<img src="http://latex.codecogs.com/png.latex?0.0101_2&space;=&space;0.3125_{10}" />
+			</div>
+			<p>And when we have numbers with both whole and fractional portions, we can combine the above. So 10.1<sub>2</sub> will be:</p>
+			<div class="centeredFormula">
+				<img src="http://latex.codecogs.com/png.latex?10.1_2&space;=&space;1&space;\times&space;2^1&space;&plus;&space;0&space;\times&space;2^0&space;&plus;&space;1&space;\times&space;2^{^-1}" /><br />
+				<img src="http://latex.codecogs.com/png.latex?10.1_2&space;=&space;2&space;&plus;&space;0&space;&plus;&space;0.5" /><br />
+				<img src="http://latex.codecogs.com/png.latex?10.1_2&space;=&space;2.5_{10}" />
+			</div>
+			<p>It's usually easier to break the whole number and fraction portions up and calculate them separately, adding the result.</p>
+			<p><b>Hexadecimal</b>, which is base 16, is another commonly used base. It can fit exactly four binary digits in a single hexadecimal digit. Now that we can convert numbers, we can verify that 1111<sub>2</sub> (the largest possible four digit binary number) equals the largest one digit hexadecimal number, which has a value of 15.</p>
+			<p>Since hexadecimal has 16 different digits, we need some way to represent them visually, just like how we have the glyph "3" to represent the binary number three. For hexadecimal, we use the first five letters of the latin alphabet to represent the numbers ten through fifteen. So A<sub>16</sub> equals 10<sub>10</sub>, B<sub>16</sub> equals 11<sub>10</sub>, etc.</p>
+			<p>Just like the other bases, hexadecimal will carry over to the next digit place when it reaches its base, which is 16. So 16<sub>10</sub> equals 10<sub>16</sub>. We can convert hexadecimal to decimal the same way as we did binary. So convert B5<sub>16</sub> to decimal, we do:</p>
+			<div class="centeredFormula">
+				<img src="http://latex.codecogs.com/png.latex?B5_{16}&space;=&space;11&space;\times&space;16^1&space;&plus;&space;5&space;\times&space;16^0" /><br />
+				<img src="http://latex.codecogs.com/png.latex?B5_{16}&space;=&space;176&space;&plus;&space;5" /><br />
+				<img src="http://latex.codecogs.com/png.latex?B5_{16}&space;=&space;181_{10}" />
+			</div>
+			<p>Note how we converted the "B" into its actual value of 11.</p>
+			<p>The reason hexadecimal is so popular is not only because it fits exactly four binary digits inside a single hexadecimal digit (making hexadecimal numbers much shorter and more readable), but most modern computers use processors that have a word size of 32 or 64 bits. A word is the natural amount of data that the processor likes to work with. We won't go into detail about processors here, but the bottom line is that binary data tends to have a number of bits which is a multiple of 32.</p>
+			<p>Sinze we can fit four bits ("binary digits") in a hexadecimal digit, each hexadecimal digit can store up to 2<sup>4</sup> numbers. On the other hand, a 32 bit number can store 2<sup>32</sup> numbers. Doing the division, we have 2<sup>32</sup> / 2<sup>4</sup> = 2<sup>8</sup>, which corresponds to four hexadecimal digits. Thus, a 32 bit number can be represented as just four hexadecimal digits. Let's verify that:</p>
+			<div class="centeredFormula">
+				<img src="http://latex.codecogs.com/png.latex?FFFF_{16}&space;=&space;15&space;\times&space;16^3&space;&plus;&space;15&space;\times&space;16^2&space;&plus;&space;15&space;\times&space;16^1&space;&plus;&space;15&space;\times&space;16^0" /><br />
+				<img src="http://latex.codecogs.com/png.latex?FFFF_{16}&space;=&space;61440&space;&plus;&space;3840&space;&plus;&space;240&space;&plus;&space;15" /><br />
+				<img src="http://latex.codecogs.com/png.latex?FFFF_{16}&space;=&space;65535" />
+			</div>
+			<p>That's the largest possible hexadecimal number we can fit in four digits. The largest possible binary number we can fit in 32 digits will be:</p>
+			<div class="centeredFormula">
+				<img src="http://latex.codecogs.com/png.latex?2^{32}&space;-&space;1&space;=&space;65535" />
+			</div>
+			<p>Which matches. 2<sup>32</sup> will be the number 1000...000<sub>2</sub> (with 32 zeroes). Subtracting 1 from that gets us the largest number with exactly 32 digits. For another example of how that works, consider 10<sup>3</sup> - 1. In this, 10<sup>3</sup> = 1000 and subtracting the 1 gets us 999, which is the largest three digit decimal integer.</p>
+
+			<h2>Converting decimal to other bases</h2>
+			<p>To convert decimal to other bases, we essentially perform this same formula in reverse. One method of doing this is dividing our base into the decimal number repeatively. In this, we perform integer division until we get to zero, and the remainders tell us our number, in reverse. This is best explained with an example. Let's convert 24 to binary:</p>
+			<table class="decimalToBaseTable">
+				<tr>
+					<td>24</td>
+					<td> / 2</td>
+					<td> = 12</td>
+					<td> remainder = 0</td>
+				</tr>
+				<tr>
+					<td>12</td>
+					<td> / 2</td>
+					<td> = 6</td>
+					<td> remainder = 0</td>
+				</tr>
+				<tr>
+					<td>6</td>
+					<td> / 2</td>
+					<td> = 3</td>
+					<td> remainder = 0</td>
+				</tr>
+				<tr>
+					<td>3</td>
+					<td> / 2</td>
+					<td> = 1</td>
+					<td> remainder = 1</td>
+				</tr>
+				<tr>
+					<td>1</td>
+					<td> / 2</td>
+					<td> = 0</td>
+					<td> remainder = 1</td>
+				</tr>
+			</table>
+			<p>So we just keep dividing until we get to zero. Recall that integer division truncates any decimal, so 3 / 2 = 1. Anyway, reading the remainder <i>in reverse</i> is our binary number. Thus, 24<sub>10</sub> = 11000<sub>2</sub>.</p>
+			<p>This works for all bases. Thus, we could convert 245<sub>10</sub> to hexadecimal:</p>
+			<table class="decimalToBaseTable">
+				<tr>
+					<td>245</td>
+					<td> / 16</td>
+					<td> = 15</td>
+					<td> remainder = 5</td>
+				</tr>
+				<tr>
+					<td>15</td>
+					<td> / 16</td>
+					<td> = 0</td>
+					<td> remainder = 15</td>
+				</tr>
+			</table>
+			<p>Reading the remainders from bottom to top and converting to letters where needed, we get 245<sub>10</sub> = F5<sub>16</sub>.</p>
+			<!-- TODO: converting fractional -->
+		</div>
+	</body>
+</html>

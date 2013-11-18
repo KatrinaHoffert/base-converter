@@ -204,3 +204,14 @@ a:hover
 {
 	color: #559;
 }
+
+.centeredFormula
+{
+	display: table;
+	margin: 0 auto;
+}
+
+img
+{
+	vertical-align: middle;
+}
